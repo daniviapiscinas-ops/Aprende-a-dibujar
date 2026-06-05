@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>✦ Simply Draw</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0e0c28;--card:#181540;--card2:#201d50;
+  --purple:#7c3aed;--purple2:#6d28d9;--purple3:#4c1d95;
+  --teal:#0d9488;--teal2:#14b8a6;
+  --yellow:#fbbf24;--pink:#f472b6;
+  --green:#22c55e;--red:#ef4444;--orange:#f97316;
+  --white:#f0eeff;--muted:rgba(240,238,255,0.45);
+  --border:rgba(255,255,255,0.07);
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--white);font-family:'Nunito',sans-serif;touch-action:manipulation}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+
+/* ===== SPLASH ===== */
+#s-splash{background:linear-gradient(160deg,#1e0a4a,#3b0f8c,#1a0a3a);align-items:center;justify-content:center;gap:14px}
+.sp-star{font-size:56px;animation:spinstar 3s linear infinite}
+@keyframes spinstar{0%{transform:rotate(0)scale(1)}50%{transform:rotate(180deg)scale(1.2)}100%{transform:rotate(360deg)scale(1)}}
+.sp-title{font-size:48px;font-weight:900;color:var(--white);letter-spacing:-2px}
+.sp-sub{font-size:15px;color:var(--muted);text-align:center;padding:0 40px}
+.sp-sub b{color:white}
+
+/* ===== WELCOME ===== */
+#s-welcome{background:linear-gradient(180deg,#0a0820,#1a0a40);align-items:center;justify-content:flex-end;padding-bottom:52px}
+.w-art{position:absolute;top:0;left:0;right:0;height:58%;background:linear-gradient(145deg,#2a1060,#1a0840);display:flex;align-items:center;justify-content:center;font-size:100px;overflow:hidden}
+.w-art::after{content:'';position:absolute;bottom:0;left:0;right:0;height:100px;background:linear-gradient(to bottom,transparent,#0a0820)}
+.w-body{position:relative;z-index:2;width:100%;padding:0 24px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.w-logo{font-size:32px;font-weight:900;display:flex;align-items:center;gap:8px}
+.w-tag{font-size:14px;color:var(--muted);text-align:center}
+.w-tag b{color:var(--white)}
+.row2{display:flex;gap:10px;width:100%}
+.btn-ol{flex:1;padding:15px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;background:transparent;border:2px solid rgba(255,255,255,.3);color:white}
+.btn-pu{flex:1;padding:15px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;background:var(--purple);border:none;color:white}
+.btn-pu:hover{background:var(--purple2)}
+.legal{font-size:10px;color:rgba(255,255,255,.3);text-align:center}
+.legal a{color:rgba(255,255,255,.5)}
+
+/* ===== ONBOARDING ===== */
+.ob{background:linear-gradient(160deg,#1a0840,#2d1080,#150830);padding:48px 24px 40px;align-items:center;justify-content:center;gap:0}
+.ob-title{font-size:26px;font-weight:900;text-align:center;line-height:1.2;margin-bottom:8px}
+.ob-sub{font-size:14px;color:var(--muted);text-align:center;margin-bottom:28px}
+.ob-art{font-size:90px;margin:10px 0 30px;text-align:center}
+.ob-cards{display:flex;gap:12px;width:100%;margin-bottom:28px}
+.ob-card{flex:1;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.15);border-radius:18px;padding:22px 10px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:all .2s;font-size:14px;font-weight:700}
+.ob-card:hover{border-color:var(--purple);background:rgba(124,58,237,.25)}
+.ob-card .ic{font-size:44px}
+.btn-big{width:100%;max-width:320px;padding:17px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;letter-spacing:1px;cursor:pointer;transition:all .2s;border:none;background:var(--purple);color:white}
+.btn-big:hover{background:var(--purple2)}
+.btn-big:disabled{background:rgba(124,58,237,.3);cursor:not-allowed}
+.prog-bar{width:160px;height:5px;background:rgba(255,255,255,.15);border-radius:3px;margin-bottom:20px}
+.prog-fill{height:100%;border-radius:3px;background:var(--yellow);transition:width .4s}
+.choices{display:flex;gap:12px;width:100%;margin-bottom:20px}
+.choice{flex:1;background:white;border-radius:18px;overflow:hidden;cursor:pointer;border:3px solid transparent;transition:all .2s}
+.choice:hover{border-color:var(--purple);transform:scale(1.03)}
+.choice .ch-img{height:150px;display:flex;align-items:center;justify-content:center;font-size:70px;background:#f0eff8}
+.choice .ch-lbl{color:#333;font-weight:800;font-size:14px;padding:10px;text-align:center}
+.av-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;margin-bottom:20px}
+.av-item{aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative}
+.av-item:hover{transform:scale(1.1)}
+.av-item.sel{border-color:white;box-shadow:0 0 0 3px var(--purple)}
+.av-ck{position:absolute;bottom:1px;right:1px;width:18px;height:18px;border-radius:50%;background:var(--teal2);color:white;font-size:9px;display:none;align-items:center;justify-content:center}
+.av-item.sel .av-ck{display:flex}
+
+/* ===== MAIN APP ===== */
+#s-app{flex-direction:row;background:var(--bg)}
+.sidenav{width:72px;background:rgba(255,255,255,.03);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;flex-shrink:0}
+.sn-av{width:48px;height:48px;border-radius:50%;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:10px}
+.sn-btn{width:58px;padding:9px 0;border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .2s;font-size:9px;color:rgba(255,255,255,.38);background:none;border:none;font-family:'Nunito',sans-serif;font-weight:700}
+.sn-btn svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2}
+.sn-btn.active{background:white;color:#2d1a6e;font-weight:900}
+.sn-btn:hover:not(.active){background:rgba(255,255,255,.07);color:var(--white)}
+.app-body{flex:1;overflow-y:auto;overflow-x:hidden}
+.app-body::-webkit-scrollbar{width:3px}
+.app-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+/* ===== SEARCH BAR ===== */
+.search-wrap{position:relative;margin-bottom:18px}
+.search-input{
+  width:100%;padding:13px 48px 13px 18px;
+  background:var(--card2);border:2px solid var(--border);
+  border-radius:50px;color:var(--white);
+  font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;
+  outline:none;transition:border-color .2s;
+}
+.search-input:focus{border-color:var(--purple)}
+.search-input::placeholder{color:var(--muted)}
+.search-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:var(--purple);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s}
+.search-btn:hover{background:var(--purple2)}
+
+/* AI GENERATOR PANEL */
+.ai-panel{
+  background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(13,148,136,.15));
+  border:1px solid rgba(124,58,237,.35);
+  border-radius:18px;padding:16px;margin-bottom:20px;
+  display:none;
+}
+.ai-panel.show{display:block}
+.ai-panel-title{font-size:13px;font-weight:800;color:#a78bfa;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ai-input-row{display:flex;gap:8px}
+.ai-input{flex:1;padding:11px 16px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.15);border-radius:50px;color:var(--white);font-family:'Nunito',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.ai-input:focus{border-color:var(--purple)}
+.ai-input::placeholder{color:var(--muted);font-size:12px}
+.ai-gen-btn{padding:11px 18px;border-radius:50px;background:var(--purple);border:none;color:white;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.ai-gen-btn:hover{background:var(--purple2)}
+.ai-gen-btn:disabled{opacity:.5;cursor:not-allowed}
+.ai-status{margin-top:10px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.ai-spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== CATALOG ===== */
+#tab-catalog{padding:18px 14px 32px}
+.tab-title{font-size:20px;font-weight:900;margin-bottom:14px}
+.level-tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:16px;padding-bottom:3px;scrollbar-width:none}
+.level-tabs::-webkit-scrollbar{display:none}
+.ltab{padding:7px 16px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;border:2px solid rgba(255,255,255,.18);background:transparent;color:var(--muted);transition:all .2s;flex-shrink:0;letter-spacing:.3px}
+.ltab.active{color:white}
+.ltab[data-level="Todo"].active{background:var(--purple);border-color:var(--purple)}
+.ltab[data-level="Fácil"].active{background:#16a34a;border-color:#16a34a}
+.ltab[data-level="Medio"].active{background:#d97706;border-color:#d97706}
+.ltab[data-level="Difícil"].active{background:#dc2626;border-color:#dc2626}
+.ltab[data-level="Experto"].active{background:#7c3aed;border-color:#5b21b6}
+
+.section-header{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.section-header::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.draw-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dcard{border-radius:16px;overflow:hidden;cursor:pointer;background:var(--card);border:1.5px solid var(--border);transition:all .22s;position:relative}
+.dcard:hover{transform:translateY(-3px);border-color:rgba(124,58,237,.5);box-shadow:0 8px 24px rgba(124,58,237,.2)}
+.dcard:active{transform:scale(.97)}
+.dcard .dc-img{height:120px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.dcard .dc-img svg{width:88px;height:88px}
+.dcard.ai-generated .dc-img{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(13,148,136,.15))}
+.dcard .dc-body{padding:10px 12px 12px}
+.dcard .dc-name{font-size:13px;font-weight:800;margin-bottom:5px}
+.dcard .dc-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.lv-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;color:white}
+.lv-badge.fácil{background:#16a34a}
+.lv-badge.medio{background:#d97706}
+.lv-badge.difícil{background:#dc2626}
+.lv-badge.experto{background:#7c3aed}
+.dc-steps{font-size:10px;color:var(--muted)}
+.dcard .lock{position:absolute;top:7px;right:7px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:11px}
+.dcard.locked .dc-img{filter:saturate(.25)brightness(.6)}
+.done-b{position:absolute;top:7px;left:7px;width:24px;height:24px;border-radius:50%;background:var(--teal2);display:flex;align-items:center;justify-content:center;font-size:11px;color:white;font-weight:900}
+.ai-badge{position:absolute;top:7px;right:7px;background:linear-gradient(135deg,#7c3aed,#0d9488);border-radius:50px;padding:3px 8px;font-size:9px;font-weight:800;color:white}
+
+/* Empty search */
+.empty-search{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-search .es-icon{font-size:48px;margin-bottom:12px}
+.empty-search p{font-size:14px;line-height:1.5}
+.empty-search b{color:var(--white)}
+
+/* ===== JOURNAL ===== */
+#tab-journal{padding:18px 14px 32px}
+.jgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.jcard{border-radius:16px;overflow:hidden;background:#e8e6f5;cursor:pointer;transition:all .2s;position:relative}
+.jcard:hover{transform:scale(1.02)}
+.jcard .ji{height:120px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#e0def5,#cccae8);overflow:hidden}
+.jcard .ji svg{width:88px;height:88px}
+.jcard .jn{padding:10px 12px;color:#2a1a5a;font-weight:800;font-size:13px}
+.jcard .jsh{position:absolute;top:7px;right:7px;width:24px;height:24px;border-radius:50%;background:var(--purple);color:white;font-size:12px;display:flex;align-items:center;justify-content:center}
+.j-empty{text-align:center;margin-top:60px;color:var(--muted)}
+.j-empty .je{font-size:56px;margin-bottom:14px}
+
+/* ===== LESSON ===== */
+#s-lesson{background:var(--bg)}
+.lhdr{background:var(--teal);padding:13px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.lbk{background:none;border:none;color:white;font-size:24px;cursor:pointer;padding:0 4px;line-height:1}
+.lhdr h2{font-family:'Nunito',sans-serif;font-size:17px;font-weight:900;flex:1;color:white}
+.lhdr .lav{font-size:26px}
+
+.steps-row{display:flex;align-items:flex-start;padding:12px 14px 8px;overflow-x:auto;flex-shrink:0;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border);scrollbar-width:none;gap:0}
+.steps-row::-webkit-scrollbar{display:none}
+.snode{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;position:relative}
+.snode+.snode{margin-left:44px}
+.snode+.snode::before{content:'';position:absolute;left:-44px;top:24px;width:44px;height:2px;background:rgba(255,255,255,.12)}
+.snode.done+.snode::before{background:var(--teal2)}
+.scirc{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;border:2.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);transition:all .2s;position:relative;z-index:1;font-family:'Nunito',sans-serif}
+.scirc.done{border-color:var(--teal2);background:rgba(20,184,166,.2);font-size:18px}
+.scirc.cur{border-color:var(--yellow);background:rgba(251,191,36,.12);box-shadow:0 0 14px rgba(251,191,36,.4);animation:glow 2s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 14px rgba(251,191,36,.3)}50%{box-shadow:0 0 26px rgba(251,191,36,.65)}}
+.slbl{font-size:8px;color:rgba(255,255,255,.4);text-align:center;max-width:48px;line-height:1.2;font-weight:700}
+.snode.cur .slbl{color:var(--yellow)}
+.snode.done .slbl{color:var(--teal2)}
+
+.step-dots{display:flex;justify-content:center;gap:5px;padding:5px 0;flex-shrink:0}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .3s}
+.dot.done{background:var(--teal2)}
+.dot.cur{background:var(--yellow);width:18px;border-radius:4px}
+
+.lcontent{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.lcontent::-webkit-scrollbar{width:3px}
+.lcontent::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+/* Visual card */
+.visual-card{background:white;border-radius:20px;overflow:hidden;box-shadow:0 6px 28px rgba(0,0,0,.28);position:relative}
+.step-badge{position:absolute;top:12px;left:12px;z-index:10;background:var(--purple);color:white;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;font-family:'Nunito',sans-serif}
+.step-name-b{position:absolute;top:12px;right:12px;z-index:10;background:rgba(0,0,0,.65);color:white;padding:5px 12px;border-radius:18px;font-size:11px;font-weight:800;font-family:'Nunito',sans-serif}
+.visual-svg-wrap{width:100%;background:#f8f7fd;display:flex;align-items:center;justify-content:center;padding:16px;min-height:240px}
+.visual-svg-wrap svg{width:100%;max-width:290px;height:220px}
+/* AI loading in visual */
+.ai-loading-wrap{min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#f8f7fd}
+.ai-loading-wrap .big-spinner{width:40px;height:40px;border:3px solid rgba(124,58,237,.2);border-top-color:#7c3aed;border-radius:50%;animation:spin .8s linear infinite}
+.ai-loading-wrap p{font-size:13px;color:#6b5ca0;font-weight:600;text-align:center;padding:0 20px}
+.visual-hint{padding:14px 16px;background:white;border-top:1px solid #ebe8f8;display:flex;align-items:flex-start;gap:10px}
+.hint-icon{font-size:22px;flex-shrink:0;margin-top:2px}
+.hint-text{font-size:13px;color:#333;line-height:1.5;font-weight:600}
+.hint-text b{color:#6d28d9}
+
+.lfoot{padding:10px 14px 18px;flex-shrink:0;display:flex;flex-direction:column;gap:6px}
+.step-counter-lbl{text-align:center;font-size:11px;color:var(--muted)}
+.btn-next{width:100%;padding:15px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;letter-spacing:.5px;cursor:pointer;border:none;transition:all .2s;background:var(--yellow);color:#1a0a00}
+.btn-next:hover{background:#fcd34d}
+.btn-finish{background:var(--teal);color:white}
+
+/* ===== DONE OVERLAY ===== */
+#overlay-done{position:fixed;inset:0;background:rgba(14,12,40,.96);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:14px;padding:32px}
+#overlay-done.show{display:flex}
+.od-emoji{font-size:78px;animation:bounce .6s ease infinite alternate}
+@keyframes bounce{0%{transform:translateY(0)}100%{transform:translateY(-12px)}}
+.od-title{font-size:28px;font-weight:900;text-align:center}
+.od-sub{font-size:14px;color:var(--muted);text-align:center;line-height:1.5}
+.od-btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;margin-top:8px}
+.btn-od1{width:100%;padding:16px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;border:none;background:var(--yellow);color:#1a0a00;cursor:pointer}
+.btn-od2{width:100%;padding:16px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;border:2px solid rgba(255,255,255,.3);background:transparent;color:white;cursor:pointer}
+
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%)translateY(70px);background:var(--card2);border:1px solid rgba(124,58,237,.4);color:white;padding:11px 22px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;z-index:998;transition:transform .3s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+#toast.show{transform:translateX(-50%)translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="s-splash" class="screen active">
+  <div class="sp-star">✦</div>
+  <div class="sp-title">Simply Draw</div>
+  <p class="sp-sub">Aprende las habilidades para <b>dibujar a tu manera</b></p>
+</div>
+
+<!-- WELCOME -->
+<div id="s-welcome" class="screen">
+  <div class="w-art">🎨</div>
+  <div class="w-body">
+    <div class="w-logo">✦ Simply Draw</div>
+    <p class="w-tag">Aprende las habilidades para <b>dibujar a tu manera</b></p>
+    <div class="row2">
+      <button class="btn-ol" onclick="goTo('s-app');initApp()">↩ ENTRAR</button>
+      <button class="btn-pu" onclick="goTo('s-ob1')">COMENZAR</button>
+    </div>
+    <p class="legal">Al continuar, aceptas nuestra <a href="#">política</a> y <a href="#">privacidad</a></p>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div id="s-ob1" class="screen ob">
+  <h1 class="ob-title">¿Tienes lápiz y papel?</h1>
+  <p class="ob-sub">Puede ser cualquier lápiz y papel</p>
+  <div class="ob-art">✏️📄</div>
+  <div class="ob-cards">
+    <div class="ob-card" onclick="goTo('s-ob2')"><div class="ic">🚫</div><span>NO</span></div>
+    <div class="ob-card" onclick="goTo('s-ob2')"><div class="ic">✅</div><span>SÍ</span></div>
+  </div>
+</div>
+<div id="s-ob2" class="screen ob">
+  <h1 class="ob-title">Para empezar, es mejor<br>tener un adulto cerca</h1>
+  <div class="ob-art">🐼👨‍👧</div>
+  <button class="btn-big" onclick="goTo('s-ob3')">CONTINUAR</button>
+</div>
+<div id="s-ob3" class="screen ob">
+  <h1 class="ob-title">¿Hay un adulto<br>a tu lado?</h1>
+  <div class="ob-cards" style="margin-top:24px;margin-bottom:28px">
+    <div class="ob-card" onclick="goTo('s-ob4')"><div class="ic">🐼</div><span>NO</span></div>
+    <div class="ob-card" onclick="goTo('s-ob4')"><div class="ic">👨‍👧</div><span>SÍ</span></div>
+  </div>
+  <button class="btn-big" onclick="goTo('s-ob4')">CONTINUAR</button>
+</div>
+<div id="s-ob4" class="screen ob">
+  <h1 class="ob-title">¿Qué te gusta más?</h1>
+  <div class="prog-bar"><div class="prog-fill" style="width:33%"></div></div>
+  <div class="choices">
+    <div class="choice" onclick="goTo('s-ob5')"><div class="ch-img">🌷</div><div class="ch-lbl">Flores</div></div>
+    <div class="choice" onclick="goTo('s-ob5')"><div class="ch-img">🐻</div><div class="ch-lbl">Animales</div></div>
+  </div>
+</div>
+<div id="s-ob5" class="screen ob">
+  <h1 class="ob-title">¿Qué te gusta más?</h1>
+  <div class="prog-bar"><div class="prog-fill" style="width:66%"></div></div>
+  <div class="choices">
+    <div class="choice" onclick="goTo('s-ob6')"><div class="ch-img">🦄</div><div class="ch-lbl">Fantástico</div></div>
+    <div class="choice" onclick="goTo('s-ob6')"><div class="ch-img">🐠</div><div class="ch-lbl">Mar</div></div>
+  </div>
+</div>
+<div id="s-ob6" class="screen ob">
+  <h1 class="ob-title">¿Qué te gusta más?</h1>
+  <div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div>
+  <div class="choices">
+    <div class="choice" onclick="goTo('s-ob7')"><div class="ch-img">🌈</div><div class="ch-lbl">Colorido</div></div>
+    <div class="choice" onclick="goTo('s-ob7')"><div class="ch-img">🌙</div><div class="ch-lbl">Mágico</div></div>
+  </div>
+</div>
+<div id="s-ob7" class="screen ob" style="justify-content:flex-start;padding-top:44px;overflow-y:auto">
+  <h1 class="ob-title">Elige tu avatar</h1>
+  <div class="av-grid" id="av-grid" style="margin-top:16px"></div>
+  <button class="btn-big" id="av-btn" disabled onclick="finishOb()">CONTINUAR</button>
+</div>
+
+<!-- MAIN APP -->
+<div id="s-app" class="screen">
+  <nav class="sidenav">
+    <div class="sn-av" id="sn-av">🐊</div>
+    <button class="sn-btn active" id="nb-cat" onclick="switchTab('catalog')">
+      <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Dibujar
+    </button>
+    <button class="sn-btn" id="nb-jour" onclick="switchTab('journal')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Diario
+    </button>
+  </nav>
+  <div class="app-body">
+    <!-- CATALOG -->
+    <div id="tab-catalog">
+      <div style="padding:18px 14px 0">
+        <div class="tab-title">¿Qué quieres dibujar?</div>
+        <!-- SEARCH -->
+        <div class="search-wrap">
+          <input class="search-input" id="search-input" placeholder="🔍  Busca un dibujo..." oninput="onSearch(this.value)">
+          <button class="search-btn" onclick="onSearchBtn()">🔍</button>
+        </div>
+        <!-- AI PANEL -->
+        <div class="ai-panel" id="ai-panel">
+          <div class="ai-panel-title">✦ Generador IA — No encontrado en el catálogo</div>
+          <div class="ai-input-row">
+            <input class="ai-input" id="ai-input" placeholder="Describe qué quieres dibujar...">
+            <button class="ai-gen-btn" id="ai-gen-btn" onclick="generateWithAI()">✦ Generar</button>
+          </div>
+          <div class="ai-status" id="ai-status" style="display:none">
+            <div class="ai-spinner"></div>
+            <span>La IA está creando tu tutorial paso a paso...</span>
+          </div>
+        </div>
+        <!-- LEVEL TABS -->
+        <div class="level-tabs" id="level-tabs"></div>
+      </div>
+      <div id="draw-grid" style="padding:0 14px 32px" class="draw-grid"></div>
+    </div>
+    <!-- JOURNAL -->
+    <div id="tab-journal" style="display:none">
+      <div style="padding:18px 14px 0"><div class="tab-title">Mi Diario</div></div>
+      <div class="jgrid" id="jgrid" style="padding:14px"></div>
+      <div class="j-empty" id="j-empty"><div class="je">📓</div><p style="font-size:14px;line-height:1.5">Completa tu primer dibujo<br>para verlo aquí</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- LESSON -->
+<div id="s-lesson" class="screen">
+  <div class="lhdr">
+    <button class="lbk" onclick="backToApp()">←</button>
+    <h2 id="l-title">Gatito</h2>
+    <div class="lav" id="l-av">🐊</div>
+  </div>
+  <div class="steps-row" id="steps-row"></div>
+  <div class="step-dots" id="step-dots"></div>
+  <div class="lcontent" id="lcontent"></div>
+  <div class="lfoot">
+    <div class="step-counter-lbl" id="step-counter"></div>
+    <button class="btn-next" id="btn-next" onclick="nextStep()">SIGUIENTE PASO →</button>
+  </div>
+</div>
+
+<!-- DONE -->
+<div id="overlay-done">
+  <div class="od-emoji">🎉</div>
+  <div class="od-title">¡Dibujo completado!</div>
+  <p class="od-sub" id="od-sub">¡Fantástico!</p>
+  <div class="od-btns">
+    <button class="btn-od1" onclick="saveToDiary()">💾 Guardar en Diario</button>
+    <button class="btn-od2" onclick="closeDone()">Elegir otro dibujo</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+// ============================================================
+// SVG HELPERS
+// ============================================================
+const C={ol:'#2c1a5e',li:'#9b8ec4',mi:'#6b5ca0',ac:'#7c3aed',tl:'#14b8a6',ye:'#fbbf24',pi:'#f472b6'};
+const s=(w=2,c=C.ol)=>`stroke="${c}" stroke-width="${w}" fill="none" stroke-linecap="round" stroke-linejoin="round"`;
+const sf=(f,sc=C.ol,w=2)=>`stroke="${sc}" stroke-width="${w}" fill="${f}" stroke-linecap="round" stroke-linejoin="round"`;
+const nd=(c=C.tl)=>`stroke-dasharray="8 3" stroke="${c}"`;
+
+// ============================================================
+// ALL DRAWINGS DATABASE
+// ============================================================
+const DB = [
+  // ─── FÁCIL ───
+  {id:1,name:'Gatito',cat:'Animales',level:'Fácil',free:true,emoji:'🐱',steps:[
+    {name:'Cabeza',hint:'Dibuja un <b>círculo grande</b> en el centro del papel. Presión suave.',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="108" r="65" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="9 4"/><text x="100" y="192" text-anchor="middle" font-size="11" fill="${C.tl}" font-family="Nunito">— círculo grande —</text></svg>`},
+    {name:'Orejas',hint:'Añade dos <b>triángulos puntiagudos</b> en la parte superior',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="108" r="62" ${s(3)}/><polygon points="60,58 42,18 84,46" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/><polygon points="140,58 158,18 116,46" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/></svg>`},
+    {name:'Ojos',hint:'Ojos grandes y redondos con un <b>punto blanco de brillo</b>',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="108" r="62" ${s(3)}/><polygon points="60,58 42,18 84,46" ${sf('#f9a8d4',C.ol,2.5)}/><polygon points="140,58 158,18 116,46" ${sf('#f9a8d4',C.ol,2.5)}/><polygon points="63,52 50,28 78,42" fill="#f472b6" ${s(1)}/><polygon points="137,52 150,28 122,42" fill="#f472b6" ${s(1)}/><circle cx="78" cy="96" r="14" stroke="${C.tl}" stroke-width="3" fill="#2c1a5e" stroke-dasharray="5 2"/><circle cx="122" cy="96" r="14" stroke="${C.tl}" stroke-width="3" fill="#2c1a5e" stroke-dasharray="5 2"/><circle cx="83" cy="91" r="4" fill="white"/><circle cx="127" cy="91" r="4" fill="white"/></svg>`},
+    {name:'Nariz',hint:'Nariz en <b>triángulo invertido</b> + boca en W + bigotes',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="108" r="62" ${s(3)}/><polygon points="60,58 42,18 84,46" ${sf('#f9a8d4',C.ol,2.5)}/><polygon points="140,58 158,18 116,46" ${sf('#f9a8d4',C.ol,2.5)}/><circle cx="78" cy="96" r="14" ${sf('#2c1a5e',C.ol,2)}/><circle cx="122" cy="96" r="14" ${sf('#2c1a5e',C.ol,2)}/><circle cx="83" cy="91" r="4" fill="white"/><circle cx="127" cy="91" r="4" fill="white"/><polygon points="100,116 93,126 107,126" stroke="${C.tl}" stroke-width="2.5" fill="#f472b6" stroke-dasharray="4 2"/><path d="M88,130 Q100,142 112,130" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="4 2"/><line x1="36" y1="117" x2="82" y2="121" stroke="${C.tl}" stroke-width="1.5" stroke-dasharray="3 2"/><line x1="36" y1="125" x2="82" y2="125" stroke="${C.tl}" stroke-width="1.5" stroke-dasharray="3 2"/><line x1="118" y1="121" x2="164" y2="117" stroke="${C.tl}" stroke-width="1.5" stroke-dasharray="3 2"/><line x1="118" y1="125" x2="164" y2="125" stroke="${C.tl}" stroke-width="1.5" stroke-dasharray="3 2"/></svg>`},
+    {name:'Cuerpo',hint:'Óvalo debajo con <b>patas redondeadas</b> y cola que se curva',
+     svg:`<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="178" rx="58" ry="36" ${s(3)}/><circle cx="100" cy="96" r="55" ${s(3)}/><polygon points="60,50 43,14 79,40" ${sf('#f9a8d4',C.ol,2.5)}/><polygon points="140,50 157,14 121,40" ${sf('#f9a8d4',C.ol,2.5)}/><circle cx="78" cy="84" r="13" ${sf('#2c1a5e',C.ol,2)}/><circle cx="122" cy="84" r="13" ${sf('#2c1a5e',C.ol,2)}/><circle cx="83" cy="79" r="4" fill="white"/><circle cx="127" cy="79" r="4" fill="white"/><polygon points="100,103 93,112 107,112" ${sf('#f472b6',C.ol,2)}/><path d="M88,117 Q100,128 112,117" ${s(2)}/><line x1="38" y1="106" x2="80" y2="110" stroke="${C.mi}" stroke-width="1.5"/><line x1="38" y1="113" x2="80" y2="113" stroke="${C.mi}" stroke-width="1.5"/><line x1="120" y1="110" x2="162" y2="106" stroke="${C.mi}" stroke-width="1.5"/><line x1="120" y1="113" x2="162" y2="113" stroke="${C.mi}" stroke-width="1.5"/><ellipse cx="70" cy="196" rx="14" ry="9" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="5 2"/><ellipse cx="130" cy="196" rx="14" ry="9" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="5 2"/><path d="M155,178 Q184,154 178,128" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/></svg>`},
+    {name:'¡Listo!',hint:'¡Repasa el contorno con más presión y añade rayas en la frente!',
+     svg:`<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="178" rx="58" ry="36" ${s(3)}/><circle cx="100" cy="96" r="55" ${s(3)}/><polygon points="60,50 43,14 79,40" ${sf('#f9a8d4',C.ol,2.5)}/><polygon points="140,50 157,14 121,40" ${sf('#f9a8d4',C.ol,2.5)}/><circle cx="78" cy="84" r="13" ${sf('#2c1a5e',C.ol,2)}/><circle cx="122" cy="84" r="13" ${sf('#2c1a5e',C.ol,2)}/><circle cx="83" cy="79" r="4" fill="white"/><circle cx="127" cy="79" r="4" fill="white"/><polygon points="100,103 93,112 107,112" ${sf('#f472b6',C.ol,2)}/><path d="M88,117 Q100,128 112,117" ${s(2)}/><line x1="38" y1="106" x2="80" y2="110" stroke="${C.mi}" stroke-width="1.5"/><line x1="38" y1="113" x2="80" y2="113" stroke="${C.mi}" stroke-width="1.5"/><line x1="120" y1="110" x2="162" y2="106" stroke="${C.mi}" stroke-width="1.5"/><line x1="120" y1="113" x2="162" y2="113" stroke="${C.mi}" stroke-width="1.5"/><ellipse cx="70" cy="196" rx="14" ry="9" ${s(2.5)}/><ellipse cx="130" cy="196" rx="14" ry="9" ${s(2.5)}/><path d="M155,178 Q184,154 178,128" ${s(3)}/><path d="M90,44 Q94,56 92,64" stroke="${C.mi}" stroke-width="1.5"/><path d="M100,42 Q100,54 100,62" stroke="${C.mi}" stroke-width="1.5"/><path d="M110,44 Q106,56 108,64" stroke="${C.mi}" stroke-width="1.5"/><line x1="62" y1="196" x2="62" y2="205" stroke="${C.mi}" stroke-width="1.5"/><line x1="70" y1="196" x2="70" y2="206" stroke="${C.mi}" stroke-width="1.5"/><line x1="78" y1="196" x2="78" y2="205" stroke="${C.mi}" stroke-width="1.5"/></svg>`}
+  ]},
+
+  {id:2,name:'Tulipán',cat:'Naturaleza',level:'Fácil',free:true,emoji:'🌷',steps:[
+    {name:'Pétalos',hint:'Dibuja un <b>óvalo central</b> y dos pétalos curvos a los lados',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="80" rx="22" ry="30" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/><path d="M78,70 Q54,48 58,84 Q66,100 78,95" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/><path d="M122,70 Q146,48 142,84 Q134,100 122,95" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/></svg>`},
+    {name:'Copa',hint:'Une los pétalos formando una <b>copa</b> con líneas curvas',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="76" rx="22" ry="28" ${s(3)}/><path d="M78,66 Q54,44 58,80 Q66,96 78,91" ${s(3)}/><path d="M122,66 Q146,44 142,80 Q134,96 122,91" ${s(3)}/><path d="M68,97 Q100,118 132,97" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/><line x1="68" y1="97" x2="68" y2="110" stroke="${C.tl}" stroke-width="3" stroke-dasharray="5 2"/><line x1="132" y1="97" x2="132" y2="110" stroke="${C.tl}" stroke-width="3" stroke-dasharray="5 2"/><path d="M68,110 Q100,119 132,110" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="5 2"/></svg>`},
+    {name:'Tallo',hint:'Dibuja una línea larga y ligeramente <b>curva hacia abajo</b>',
+     svg:`<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="70" rx="22" ry="28" ${s(3)}/><path d="M78,60 Q54,40 58,76 Q66,92 78,87" ${s(3)}/><path d="M122,60 Q146,40 142,76 Q134,92 122,87" ${s(3)}/><path d="M68,93 Q100,112 132,93" ${s(3)}/><line x1="68" y1="93" x2="68" y2="106" ${s(3)}/><line x1="132" y1="93" x2="132" y2="106" ${s(3)}/><path d="M68,106 Q100,115 132,106" ${s(3)}/><path d="M100,115 Q96,160 98,210" stroke="${C.tl}" stroke-width="3.5" fill="none" stroke-dasharray="8 3"/></svg>`},
+    {name:'Hojas',hint:'Añade hojas <b>largas y puntiagudas</b> al tallo, una a cada lado',
+     svg:`<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="70" rx="22" ry="28" ${s(3)}/><path d="M78,60 Q54,40 58,76 Q66,92 78,87" ${s(3)}/><path d="M122,60 Q146,40 142,76 Q134,92 122,87" ${s(3)}/><path d="M68,93 Q100,112 132,93" ${s(3)}/><line x1="68" y1="93" x2="68" y2="106" ${s(3)}/><line x1="132" y1="93" x2="132" y2="106" ${s(3)}/><path d="M68,106 Q100,115 132,106" ${s(3)}/><path d="M99,115 Q96,162 98,210" ${s(3.5)}/><path d="M98,148 Q72,128 60,148 Q76,162 98,156" stroke="${C.tl}" stroke-width="2.5" fill="rgba(74,222,128,0.2)" stroke-dasharray="6 2"/><path d="M99,160 Q126,140 138,160 Q122,174 99,168" stroke="${C.tl}" stroke-width="2.5" fill="rgba(74,222,128,0.2)" stroke-dasharray="6 2"/></svg>`},
+    {name:'¡Lista!',hint:'Repasa el contorno y añade <b>líneas de sombra</b> en los pétalos',
+     svg:`<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="70" rx="22" ry="28" ${sf('rgba(251,113,133,0.25)',C.ol,3)}/><path d="M78,60 Q54,40 58,76 Q66,92 78,87" ${sf('rgba(251,113,133,0.2)',C.ol,3)}/><path d="M122,60 Q146,40 142,76 Q134,92 122,87" ${sf('rgba(251,113,133,0.2)',C.ol,3)}/><path d="M68,93 Q100,112 132,93" ${s(3)}/><line x1="68" y1="93" x2="68" y2="106" ${s(3)}/><line x1="132" y1="93" x2="132" y2="106" ${s(3)}/><path d="M68,106 Q100,115 132,106" ${s(3)}/><line x1="95" y1="48" x2="92" y2="95" stroke="${C.mi}" stroke-width="1"/><line x1="100" y1="45" x2="100" y2="95" stroke="${C.mi}" stroke-width="1"/><line x1="105" y1="48" x2="108" y2="95" stroke="${C.mi}" stroke-width="1"/><path d="M99,115 Q96,162 98,210" ${s(3.5)}/><path d="M98,148 Q72,128 60,148 Q76,162 98,156" ${sf('rgba(74,222,128,0.4)',C.ol,2.5)}/><path d="M99,160 Q126,140 138,160 Q122,174 99,168" ${sf('rgba(74,222,128,0.4)',C.ol,2.5)}/><path d="M98,152 Q80,144 68,148" stroke="${C.mi}" stroke-width="1"/><path d="M99,164 Q118,156 130,160" stroke="${C.mi}" stroke-width="1"/></svg>`}
+  ]},
+
+  {id:3,name:'Pez',cat:'Mar',level:'Fácil',free:true,emoji:'🐟',steps:[
+    {name:'Cuerpo',hint:'Dibuja un <b>óvalo alargado</b>, más ancho en el centro',
+     svg:`<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg"><ellipse cx="105" cy="80" rx="75" ry="42" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="8 3"/></svg>`},
+    {name:'Cola',hint:'La cola es una <b>V o abanico</b> en el extremo derecho',
+     svg:`<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="80" rx="68" ry="40" ${s(3)}/><path d="M165,80 L196,54 L196,106 Z" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/></svg>`},
+    {name:'Aletas',hint:'Aleta dorsal arriba y <b>aleta pectoral</b> al lado del cuerpo',
+     svg:`<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="82" rx="68" ry="40" ${s(3)}/><path d="M165,82 L196,54 L196,110 Z" ${s(3)}/><path d="M75,43 Q100,18 125,43" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/><path d="M85,88 Q75,108 95,108 Q105,98 85,88" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="6 2"/></svg>`},
+    {name:'Escamas',hint:'<b>Semicírculos en filas</b> como tejas — empieza desde la cola',
+     svg:`<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="82" rx="68" ry="40" ${s(3)}/><path d="M165,82 L196,54 L196,110 Z" ${s(3)}/><path d="M75,43 Q100,18 125,43" ${s(3)}/><path d="M85,88 Q75,108 95,108 Q105,98 85,88" ${s(3)}/>${[0,1,2,3,4].map(i=>`<path d="${44+i*15},70 Q${51+i*15},62 ${59+i*15},70" stroke="${C.tl}" stroke-width="1.5" fill="none" stroke-dasharray="4 1"/>`).join('')}${[0,1,2,3].map(i=>`<path d="${52+i*15},82 Q${59+i*15},74 ${67+i*15},82" stroke="${C.tl}" stroke-width="1.5" fill="none" stroke-dasharray="4 1"/>`).join('')}${[0,1,2].map(i=>`<path d="${60+i*15},94 Q${67+i*15},86 ${75+i*15},94" stroke="${C.tl}" stroke-width="1.5" fill="none" stroke-dasharray="4 1"/>`).join('')}</svg>`},
+    {name:'¡Listo!',hint:'Añade el <b>ojo brillante</b> y la línea lateral del cuerpo',
+     svg:`<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="82" rx="68" ry="40" ${sf('rgba(147,197,253,0.15)',C.ol,3)}/><path d="M165,82 L196,54 L196,110 Z" ${sf('rgba(147,197,253,0.25)',C.ol,2.5)}/><path d="M75,43 Q100,18 125,43" ${sf('rgba(147,197,253,0.15)',C.ol,2.5)}/><path d="M85,88 Q75,108 95,108 Q105,98 85,88" ${sf('rgba(147,197,253,0.15)',C.ol,2.5)}/>${[0,1,2,3,4].map(i=>`<path d="${44+i*15},70 Q${51+i*15},62 ${59+i*15},70" stroke="${C.mi}" stroke-width="1.5" fill="none"/>`).join('')}${[0,1,2,3].map(i=>`<path d="${52+i*15},82 Q${59+i*15},74 ${67+i*15},82" stroke="${C.mi}" stroke-width="1.5" fill="none"/>`).join('')}${[0,1,2].map(i=>`<path d="${60+i*15},94 Q${67+i*15},86 ${75+i*15},94" stroke="${C.mi}" stroke-width="1.5" fill="none"/>`).join('')}<circle cx="46" cy="75" r="11" ${sf('#2c1a5e',C.ol,2)}/><circle cx="42" cy="71" r="3.5" fill="white"/><path d="M32,82 Q36,88 32,92" stroke="${C.ol}" stroke-width="2"/><path d="M50,80 Q100,72 155,80" stroke="${C.mi}" stroke-width="1.5" stroke-dasharray="3 3" fill="none"/></svg>`}
+  ]},
+
+  {id:4,name:'Unicornio',cat:'Fantástico',level:'Fácil',free:true,emoji:'🦄',steps:[
+    {name:'Cabeza',hint:'Dibuja un <b>óvalo vertical</b> para la cabeza del unicornio',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="115" rx="55" ry="65" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="8 3"/></svg>`},
+    {name:'Cuerno',hint:'El cuerno mágico: un <b>cono con espiral</b> desde la frente',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="115" rx="55" ry="62" ${s(3)}/><path d="M88,55 Q100,8 112,55" stroke="${C.tl}" stroke-width="3" fill="rgba(251,191,36,0.2)" stroke-dasharray="7 3"/><line x1="88" y1="55" x2="112" y2="55" stroke="${C.tl}" stroke-width="2" stroke-dasharray="5 2"/><path d="M91,45 Q100,20 109,45" stroke="${C.tl}" stroke-width="1.5" fill="none" stroke-dasharray="5 2"/><path d="M94,34 Q100,14 106,34" stroke="${C.tl}" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/></svg>`},
+    {name:'Orejas/ojos',hint:'Orejas <b>puntiagudas</b> a los lados y ojos grandes con pestañas',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="115" rx="55" ry="62" ${s(3)}/><path d="M88,55 Q100,8 112,55" ${sf('rgba(251,191,36,0.2)',C.ol,2.5)}/><line x1="88" y1="55" x2="112" y2="55" ${s(2)}/><path d="M52,78 Q40,52 58,63" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="6 2"/><line x1="52" y1="78" x2="58" y2="63" stroke="${C.tl}" stroke-width="3" stroke-dasharray="5 2"/><path d="M148,78 Q160,52 142,63" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="6 2"/><line x1="148" y1="78" x2="142" y2="63" stroke="${C.tl}" stroke-width="3" stroke-dasharray="5 2"/><ellipse cx="78" cy="108" rx="14" ry="11" stroke="${C.tl}" stroke-width="2.5" fill="#2c1a5e" stroke-dasharray="5 2"/><ellipse cx="122" cy="108" rx="14" ry="11" stroke="${C.tl}" stroke-width="2.5" fill="#2c1a5e" stroke-dasharray="5 2"/><circle cx="82" cy="104" r="4" fill="white"/><circle cx="126" cy="104" r="4" fill="white"/></svg>`},
+    {name:'Melena',hint:'Ondas y <b>rizos fluidos</b> que caen por un lado de la cara',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="115" rx="55" ry="62" ${s(3)}/><path d="M88,55 Q100,8 112,55" ${sf('rgba(251,191,36,0.2)',C.ol,2.5)}/><path d="M52,78 Q40,52 58,63" ${s(3)}/><line x1="52" y1="78" x2="58" y2="63" ${s(3)}/><path d="M148,78 Q160,52 142,63" ${s(3)}/><line x1="148" y1="78" x2="142" y2="63" ${s(3)}/><ellipse cx="78" cy="108" rx="14" ry="11" ${sf('#2c1a5e',C.ol,2)}/><ellipse cx="122" cy="108" rx="14" ry="11" ${sf('#2c1a5e',C.ol,2)}/><circle cx="82" cy="104" r="4" fill="white"/><circle cx="126" cy="104" r="4" fill="white"/><path d="M145,78 Q165,94 156,115 Q166,135 150,152 Q160,167 145,177" stroke="${C.tl}" stroke-width="3.5" fill="none" stroke-dasharray="7 3"/><path d="M148,76 Q172,90 168,116 Q175,140 160,160" stroke="#a78bfa" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/><path d="M140,74 Q155,88 148,110 Q156,130 144,150" stroke="#f9a8d4" stroke-width="2" fill="none" stroke-dasharray="5 2"/></svg>`},
+    {name:'¡Listo!',hint:'Añade <b>estrellitas y brillos</b> mágicos alrededor del unicornio',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="115" rx="55" ry="62" ${sf('rgba(196,181,253,0.12)',C.ol,3)}/><path d="M88,55 Q100,8 112,55" ${sf('rgba(251,191,36,0.3)',C.ol,3)}/><path d="M91,45 Q100,20 109,45" stroke="${C.mi}" stroke-width="1.5" fill="none"/><path d="M94,34 Q100,14 106,34" stroke="${C.mi}" stroke-width="1.5" fill="none"/><path d="M52,78 Q40,52 58,63" ${sf('#f9a8d4',C.ol,2.5)}/><line x1="52" y1="78" x2="58" y2="63" ${s(2.5)}/><path d="M148,78 Q160,52 142,63" ${sf('#f9a8d4',C.ol,2.5)}/><line x1="148" y1="78" x2="142" y2="63" ${s(2.5)}/><ellipse cx="78" cy="108" rx="14" ry="11" ${sf('#2c1a5e',C.ol,2)}/><ellipse cx="122" cy="108" rx="14" ry="11" ${sf('#2c1a5e',C.ol,2)}/><circle cx="82" cy="104" r="4" fill="white"/><circle cx="126" cy="104" r="4" fill="white"/><path d="M145,78 Q165,94 156,115 Q166,135 150,152 Q160,167 145,177" stroke="#a78bfa" stroke-width="3.5" fill="none"/><path d="M148,76 Q172,90 168,116 Q175,140 160,160" stroke="#f9a8d4" stroke-width="2.5" fill="none"/><text x="30" y="85" font-size="16" fill="${C.ye}">✦</text><text x="155" y="58" font-size="13" fill="#a78bfa">✦</text><text x="20" y="132" font-size="11" fill="#f9a8d4">✦</text><text x="163" y="188" font-size="18" fill="${C.ye}">✦</text></svg>`}
+  ]},
+
+  {id:5,name:'Mariposa',cat:'Animales',level:'Fácil',free:true,emoji:'🦋',steps:[
+    {name:'Cuerpo',hint:'Un <b>óvalo estrecho vertical</b> más cabeza pequeña arriba',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="108" rx="10" ry="34" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/><circle cx="100" cy="66" r="12" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="5 2"/></svg>`},
+    {name:'Alas sup.',hint:'Dos <b>alas grandes redondeadas</b> arriba, simétricas',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="110" rx="10" ry="32" ${s(3)}/><circle cx="100" cy="66" r="12" ${s(3)}/><path d="M92,82 Q50,38 42,80 Q46,112 92,108" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/><path d="M108,82 Q150,38 158,80 Q154,112 108,108" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/></svg>`},
+    {name:'Alas inf.',hint:'Alas inferiores más pequeñas con <b>punta redondeada</b>',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="110" rx="10" ry="32" ${s(3)}/><circle cx="100" cy="66" r="12" ${s(3)}/><path d="M92,82 Q50,38 42,80 Q46,112 92,108" ${s(3)}/><path d="M108,82 Q150,38 158,80 Q154,112 108,108" ${s(3)}/><path d="M92,114 Q55,116 50,140 Q60,167 92,156" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/><path d="M108,114 Q145,116 150,140 Q140,167 108,156" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/></svg>`},
+    {name:'Antenas',hint:'Antenas finas que terminan en una <b>bolita</b>',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="110" rx="10" ry="32" ${s(3)}/><circle cx="100" cy="66" r="12" ${s(3)}/><path d="M92,82 Q50,38 42,80 Q46,112 92,108" ${s(3)}/><path d="M108,82 Q150,38 158,80 Q154,112 108,108" ${s(3)}/><path d="M92,114 Q55,116 50,140 Q60,167 92,156" ${s(3)}/><path d="M108,114 Q145,116 150,140 Q140,167 108,156" ${s(3)}/><path d="M95,55 Q80,36 72,24" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/><circle cx="72" cy="24" r="5" fill="${C.tl}" stroke="${C.tl}" stroke-width="2"/><path d="M105,55 Q120,36 128,24" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/><circle cx="128" cy="24" r="5" fill="${C.tl}" stroke="${C.tl}" stroke-width="2"/></svg>`},
+    {name:'¡Lista!',hint:'Decora las alas con <b>círculos y patrones</b> coloridos',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path d="M92,82 Q50,38 42,80 Q46,112 92,108" ${sf('rgba(251,191,36,0.2)',C.ol,3)}/><path d="M108,82 Q150,38 158,80 Q154,112 108,108" ${sf('rgba(251,191,36,0.2)',C.ol,3)}/><path d="M92,114 Q55,116 50,140 Q60,167 92,156" ${sf('rgba(244,114,182,0.2)',C.ol,3)}/><path d="M108,114 Q145,116 150,140 Q140,167 108,156" ${sf('rgba(244,114,182,0.2)',C.ol,3)}/><ellipse cx="100" cy="110" rx="10" ry="32" ${sf('rgba(196,181,253,0.35)',C.ol,3)}/><circle cx="100" cy="66" r="12" ${sf('rgba(196,181,253,0.35)',C.ol,3)}/><circle cx="68" cy="82" r="11" fill="rgba(251,191,36,0.3)" stroke="${C.ol}" stroke-width="2"/><circle cx="132" cy="82" r="11" fill="rgba(251,191,36,0.3)" stroke="${C.ol}" stroke-width="2"/><circle cx="65" cy="132" r="8" fill="rgba(244,114,182,0.35)" stroke="${C.mi}" stroke-width="2"/><circle cx="135" cy="132" r="8" fill="rgba(244,114,182,0.35)" stroke="${C.mi}" stroke-width="2"/><path d="M95,55 Q80,36 72,24" ${s(2.5)}/><circle cx="72" cy="24" r="5" ${sf(C.ol,C.ol,2)}/><path d="M105,55 Q120,36 128,24" ${s(2.5)}/><circle cx="128" cy="24" r="5" ${sf(C.ol,C.ol,2)}/></svg>`}
+  ]},
+
+  {id:6,name:'Dinosaurio',cat:'Fantástico',level:'Fácil',free:true,emoji:'🦕',steps:[
+    {name:'Cuerpo',hint:'Dibuja un <b>óvalo grande inclinado</b> unos 15°',
+     svg:`<svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg"><ellipse cx="110" cy="105" rx="80" ry="50" transform="rotate(-15 110 105)" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="9 3"/></svg>`},
+    {name:'Cuello',hint:'Cuello largo y curvo con <b>cabeza pequeña ovalada</b> en la punta',
+     svg:`<svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="112" cy="118" rx="76" ry="47" transform="rotate(-12 112 118)" ${s(3)}/><path d="M80,80 Q74,44 94,26" stroke="${C.tl}" stroke-width="3.5" fill="none" stroke-dasharray="8 3"/><ellipse cx="100" cy="18" rx="20" ry="13" transform="rotate(15 100 18)" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="6 2"/></svg>`},
+    {name:'Patas',hint:'4 patas gruesas con <b>3 dedos</b> en cada pie',
+     svg:`<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg"><ellipse cx="112" cy="108" rx="76" ry="46" transform="rotate(-12 112 108)" ${s(3)}/><path d="M80,72 Q74,38 94,20" ${s(3.5)}/><ellipse cx="100" cy="13" rx="20" ry="12" transform="rotate(15 100 13)" ${s(3)}/><path d="M73,146 L66,178 L66,205" stroke="${C.tl}" stroke-width="4" fill="none" stroke-dasharray="7 2"/><path d="M99,152 L95,180 L95,205" stroke="${C.tl}" stroke-width="4" fill="none" stroke-dasharray="7 2"/><path d="M128,150 L136,180 L136,206" stroke="${C.tl}" stroke-width="4.5" fill="none" stroke-dasharray="7 2"/><path d="M148,140 L158,174 L158,202" stroke="${C.tl}" stroke-width="4.5" fill="none" stroke-dasharray="7 2"/></svg>`},
+    {name:'Cola',hint:'Cola larga y cónica que se va <b>estrechando hacia la punta</b>',
+     svg:`<svg viewBox="0 0 250 220" xmlns="http://www.w3.org/2000/svg"><ellipse cx="110" cy="108" rx="74" ry="45" transform="rotate(-12 110 108)" ${s(3)}/><path d="M78,72 Q72,38 92,20" ${s(3.5)}/><ellipse cx="98" cy="14" rx="19" ry="12" transform="rotate(15 98 14)" ${s(3)}/><path d="M72,142 L65,175 L65,202" ${s(4)}/><path d="M98,150 L94,178 L94,202" ${s(4)}/><path d="M126,148 L134,178 L134,203" ${s(4.5)}/><path d="M146,138 L156,172 L156,200" ${s(4.5)}/><path d="M176,90 Q212,80 238,66 Q248,56 244,48" stroke="${C.tl}" stroke-width="4" fill="none" stroke-dasharray="8 3"/></svg>`},
+    {name:'¡Listo!',hint:'Añade el <b>ojo brillante, sonrisa</b> y manchas decorativas',
+     svg:`<svg viewBox="0 0 250 220" xmlns="http://www.w3.org/2000/svg"><ellipse cx="110" cy="108" rx="74" ry="45" transform="rotate(-12 110 108)" ${sf('rgba(134,239,172,0.15)',C.ol,3)}/><path d="M78,72 Q72,38 92,20" ${s(3.5)}/><ellipse cx="98" cy="14" rx="19" ry="12" transform="rotate(15 98 14)" ${sf('rgba(134,239,172,0.15)',C.ol,3)}/><path d="M72,142 L65,175 L65,202" ${s(4)}/><path d="M98,150 L94,178 L94,202" ${s(4)}/><path d="M126,148 L134,178 L134,203" ${s(4.5)}/><path d="M146,138 L156,172 L156,200" ${s(4.5)}/><path d="M57,200 L65,200 L73,200" ${s(3)}/><path d="M86,200 L94,200 L102,200" ${s(3)}/><path d="M126,203 L134,203 L142,203" ${s(3)}/><path d="M148,200 L156,200 L164,200" ${s(3)}/><path d="M176,90 Q212,80 238,66 Q248,56 244,48" ${s(4)}/><circle cx="88" cy="10" r="6" ${sf('#2c1a5e',C.ol,2)}/><circle cx="86" cy="8" r="2" fill="white"/><path d="M100,18 Q108,24 116,18" stroke="${C.ol}" stroke-width="2.5"/><circle cx="118" cy="100" r="8" ${sf('rgba(74,222,128,0.4)',C.mi,1.5)}/><circle cx="98" cy="118" r="6" ${sf('rgba(74,222,128,0.4)',C.mi,1.5)}/><circle cx="138" cy="108" r="5" ${sf('rgba(74,222,128,0.4)',C.mi,1.5)}/></svg>`}
+  ]},
+
+  // ─── MEDIO ───
+  {id:7,name:'Perro',cat:'Animales',level:'Medio',free:true,emoji:'🐶',steps:[
+    {name:'Cabeza',hint:'Cabeza grande <b>redondeada</b>, ligeramente cuadrada abajo',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path d="M35,100 Q35,40 100,35 Q165,40 165,100 Q165,145 100,148 Q35,145 35,100" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="9 3"/></svg>`},
+    {name:'Orejas',hint:'Orejas <b>caídas y redondeadas</b> a los lados de la cabeza',
+     svg:`<svg viewBox="0 0 200 210" xmlns="http://www.w3.org/2000/svg"><path d="M35,100 Q35,40 100,35 Q165,40 165,100 Q165,145 100,148 Q35,145 35,100" ${s(3)}/><path d="M38,72 Q18,50 22,90 Q26,120 42,125 Q38,100 38,72" stroke="${C.tl}" stroke-width="3" fill="rgba(245,205,180,0.3)" stroke-dasharray="7 3"/><path d="M162,72 Q182,50 178,90 Q174,120 158,125 Q162,100 162,72" stroke="${C.tl}" stroke-width="3" fill="rgba(245,205,180,0.3)" stroke-dasharray="7 3"/></svg>`},
+    {name:'Ojos/nariz',hint:'Ojos redondos brillantes y nariz <b>grande en óvalo</b>',
+     svg:`<svg viewBox="0 0 200 210" xmlns="http://www.w3.org/2000/svg"><path d="M35,100 Q35,40 100,35 Q165,40 165,100 Q165,145 100,148 Q35,145 35,100" ${s(3)}/><path d="M38,72 Q18,50 22,90 Q26,120 42,125 Q38,100 38,72" ${sf('rgba(245,205,180,0.3)',C.ol,2.5)}/><path d="M162,72 Q182,50 178,90 Q174,120 158,125 Q162,100 162,72" ${sf('rgba(245,205,180,0.3)',C.ol,2.5)}/><circle cx="75" cy="85" r="13" stroke="${C.tl}" stroke-width="2.5" fill="#2c1a5e" stroke-dasharray="5 2"/><circle cx="125" cy="85" r="13" stroke="${C.tl}" stroke-width="2.5" fill="#2c1a5e" stroke-dasharray="5 2"/><circle cx="79" cy="81" r="4.5" fill="white"/><circle cx="129" cy="81" r="4.5" fill="white"/><ellipse cx="100" cy="115" rx="18" ry="12" stroke="${C.tl}" stroke-width="2.5" fill="#222" stroke-dasharray="6 2"/></svg>`},
+    {name:'Boca',hint:'Boca con <b>labios y lengua</b> colgando — muy expresivo',
+     svg:`<svg viewBox="0 0 200 210" xmlns="http://www.w3.org/2000/svg"><path d="M35,100 Q35,40 100,35 Q165,40 165,100 Q165,145 100,148 Q35,145 35,100" ${s(3)}/><path d="M38,72 Q18,50 22,90 Q26,120 42,125 Q38,100 38,72" ${sf('rgba(245,205,180,0.3)',C.ol,2.5)}/><path d="M162,72 Q182,50 178,90 Q174,120 158,125 Q162,100 162,72" ${sf('rgba(245,205,180,0.3)',C.ol,2.5)}/><circle cx="75" cy="85" r="13" ${sf('#2c1a5e',C.ol,2)}/><circle cx="125" cy="85" r="13" ${sf('#2c1a5e',C.ol,2)}/><circle cx="79" cy="81" r="4.5" fill="white"/><circle cx="129" cy="81" r="4.5" fill="white"/><ellipse cx="100" cy="115" rx="18" ry="12" ${sf('#222',C.ol,2.5)}/><path d="M82,127 Q100,145 118,127" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="5 2"/><ellipse cx="100" cy="140" rx="12" ry="16" stroke="${C.tl}" stroke-width="2" fill="rgba(244,114,182,0.5)" stroke-dasharray="5 2"/></svg>`},
+    {name:'Cuerpo',hint:'Cuerpo robusto con <b>4 patas y cola</b> que se mueve',
+     svg:`<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg"><path d="M35,95 Q35,38 100,33 Q165,38 165,95 Q165,140 100,143 Q35,140 35,95" ${s(3)}/><path d="M38,68 Q18,46 22,86 Q26,116 42,121 Q38,96 38,68" ${sf('rgba(245,205,180,0.3)',C.ol,2)}/><path d="M162,68 Q182,46 178,86 Q174,116 158,121 Q162,96 162,68" ${sf('rgba(245,205,180,0.3)',C.ol,2)}/><circle cx="75" cy="82" r="12" ${sf('#2c1a5e',C.ol,2)}/><circle cx="125" cy="82" r="12" ${sf('#2c1a5e',C.ol,2)}/><circle cx="79" cy="78" r="4" fill="white"/><circle cx="129" cy="78" r="4" fill="white"/><ellipse cx="100" cy="112" rx="16" ry="11" ${sf('#222',C.ol,2)}/><path d="M82,124 Q100,140 118,124" ${s(2)}/><ellipse cx="100" cy="136" rx="11" ry="14" ${sf('rgba(244,114,182,0.5)',C.ol,2)}/><ellipse cx="100" cy="200" rx="55" ry="40" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="8 3"/><path d="M58,234 L55,258" stroke="${C.tl}" stroke-width="4" fill="none" stroke-dasharray="5 2"/><path d="M82,240 L80,258" stroke="${C.tl}" stroke-width="4" fill="none" stroke-dasharray="5 2"/><path d="M118,240 L120,258" stroke="${C.tl}" stroke-width="4" fill="none" stroke-dasharray="5 2"/><path d="M142,234 L145,258" stroke="${C.tl}" stroke-width="4" fill="none" stroke-dasharray="5 2"/><path d="M152,182 Q178,165 182,148" stroke="${C.tl}" stroke-width="3.5" fill="none" stroke-dasharray="6 3"/></svg>`},
+    {name:'¡Listo!',hint:'Repasa todo, añade <b>manchas o pelo</b> según tu estilo',
+     svg:`<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg"><path d="M35,95 Q35,38 100,33 Q165,38 165,95 Q165,140 100,143 Q35,140 35,95" ${sf('rgba(245,205,180,0.1)',C.ol,3)}/><path d="M38,68 Q18,46 22,86 Q26,116 42,121 Q38,96 38,68" ${sf('rgba(245,205,180,0.3)',C.ol,2.5)}/><path d="M162,68 Q182,46 178,86 Q174,116 158,121 Q162,96 162,68" ${sf('rgba(245,205,180,0.3)',C.ol,2.5)}/><circle cx="75" cy="82" r="12" ${sf('#2c1a5e',C.ol,2)}/><circle cx="125" cy="82" r="12" ${sf('#2c1a5e',C.ol,2)}/><circle cx="79" cy="78" r="4" fill="white"/><circle cx="129" cy="78" r="4" fill="white"/><ellipse cx="100" cy="112" rx="16" ry="11" ${sf('#222',C.ol,2)}/><path d="M82,124 Q100,140 118,124" ${s(2)}/><ellipse cx="100" cy="136" rx="11" ry="14" ${sf('rgba(244,114,182,0.5)',C.ol,2)}/><ellipse cx="100" cy="200" rx="55" ry="40" ${sf('rgba(245,205,180,0.1)',C.ol,3)}/><path d="M58,234 L55,258" ${s(4)}/><path d="M82,240 L80,258" ${s(4)}/><path d="M118,240 L120,258" ${s(4)}/><path d="M142,234 L145,258" ${s(4)}/><path d="M152,182 Q178,165 182,148" ${s(3.5)}/><circle cx="55" cy="180" r="14" ${sf('rgba(200,160,120,0.4)',C.mi,1.5)}/><circle cx="148" cy="192" r="10" ${sf('rgba(200,160,120,0.4)',C.mi,1.5)}/></svg>`}
+  ]},
+
+  {id:8,name:'Ballena',cat:'Mar',level:'Medio',free:true,emoji:'🐋',steps:[
+    {name:'Cuerpo',hint:'Cuerpo enorme y <b>fusiforme</b>, más ancho en el centro',
+     svg:`<svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg"><path d="M20,80 Q30,30 130,20 Q220,28 240,80 Q220,132 130,140 Q30,132 20,80" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="9 3"/></svg>`},
+    {name:'Cola',hint:'Cola horizontal con dos <b>aletas simétricas</b> en punta',
+     svg:`<svg viewBox="0 0 280 170" xmlns="http://www.w3.org/2000/svg"><path d="M20,82 Q30,32 130,22 Q218,30 240,82 Q218,134 130,142 Q30,134 20,82" ${s(3)}/><path d="M238,82 L270,52 Q276,38 268,36 Q258,34 252,50 L248,82 L252,114 Q258,130 268,128 Q276,126 270,112 Z" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="8 3"/></svg>`},
+    {name:'Aleta dorsal',hint:'Aleta triangular <b>en el centro de la espalda</b>',
+     svg:`<svg viewBox="0 0 280 170" xmlns="http://www.w3.org/2000/svg"><path d="M20,82 Q30,32 130,22 Q218,30 240,82 Q218,134 130,142 Q30,134 20,82" ${s(3)}/><path d="M238,82 L270,52 Q276,38 268,36 Q258,34 252,50 L248,82 L252,114 Q258,130 268,128 Q276,126 270,112 Z" ${s(3)}/><path d="M130,24 Q145,4 155,24" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/><path d="M50,70 Q60,100 80,105 Q60,110 50,70" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/></svg>`},
+    {name:'Ojo/boca',hint:'Ojo pequeño brillante y <b>boca enorme</b> curvada',
+     svg:`<svg viewBox="0 0 280 170" xmlns="http://www.w3.org/2000/svg"><path d="M20,82 Q30,32 130,22 Q218,30 240,82 Q218,134 130,142 Q30,134 20,82" ${s(3)}/><path d="M238,82 L270,52 Q276,38 268,36 Q258,34 252,50 L248,82 L252,114 Q258,130 268,128 Q276,126 270,112 Z" ${s(3)}/><path d="M130,24 Q145,4 155,24" ${s(3)}/><path d="M50,70 Q60,100 80,105 Q60,110 50,70" ${s(2.5)}/><circle cx="44" cy="68" r="8" stroke="${C.tl}" stroke-width="2.5" fill="#2c1a5e" stroke-dasharray="4 2"/><circle cx="41" cy="65" r="2.5" fill="white"/><path d="M20,90 Q60,72 100,90" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/></svg>`},
+    {name:'Chorrito',hint:'El chorro de agua desde el soplete en lo alto',
+     svg:`<svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg"><path d="M20,90 Q30,40 130,30 Q218,38 240,90 Q218,142 130,150 Q30,142 20,90" ${sf('rgba(147,197,253,0.1)',C.ol,3)}/><path d="M238,90 L270,60 Q276,46 268,44 Q258,42 252,58 L248,90 L252,122 Q258,138 268,136 Q276,134 270,120 Z" ${sf('rgba(147,197,253,0.15)',C.ol,2.5)}/><path d="M130,32 Q145,12 155,32" ${sf('rgba(147,197,253,0.15)',C.ol,3)}/><path d="M50,78 Q60,108 80,113 Q60,118 50,78" ${sf('rgba(240,240,255,0.3)',C.ol,2)}/><circle cx="44" cy="76" r="8" ${sf('#2c1a5e',C.ol,2)}/><circle cx="41" cy="73" r="2.5" fill="white"/><path d="M20,98 Q60,80 100,98" ${s(2.5)}/><path d="M138,30 Q135,8 130,0 Q125,8 122,30" stroke="${C.tl}" stroke-width="2.5" fill="rgba(147,197,253,0.4)" stroke-dasharray="6 2"/><path d="M126,12 Q122,2 118,8" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="4 2"/><path d="M142,10 Q146,2 150,8" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="4 2"/></svg>`}
+  ]},
+
+  {id:9,name:'Castillo',cat:'Construcciones',level:'Medio',free:true,emoji:'🏰',steps:[
+    {name:'Base',hint:'Dibuja un <b>rectángulo grande</b> como la base del castillo',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="90" width="140" height="100" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="9 3"/></svg>`},
+    {name:'Torres',hint:'Añade <b>dos torres</b> más altas a cada lado',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="90" width="140" height="100" ${s(3)}/><rect x="14" y="60" width="38" height="130" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="8 3"/><rect x="148" y="60" width="38" height="130" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="8 3"/></svg>`},
+    {name:'Almenas',hint:'Almenas en zigzag en lo alto de las torres y la muralla',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="90" width="140" height="100" ${s(3)}/><rect x="14" y="60" width="38" height="130" ${s(3)}/><rect x="148" y="60" width="38" height="130" ${s(3)}/>${[0,1,2,3].map(i=>`<rect x="${14+i*10}" y="50" width="8" height="10" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="3 1"/>`).join('')}${[0,1,2,3].map(i=>`<rect x="${148+i*10}" y="50" width="8" height="10" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="3 1"/>`).join('')}${[0,1,2,3,4,5].map(i=>`<rect x="${34+i*17}" y="80" width="11" height="11" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="3 1"/>`).join('')}</svg>`},
+    {name:'Puerta/ventanas',hint:'<b>Puerta ojival</b> en el centro y ventanas pequeñas',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="90" width="140" height="100" ${s(3)}/><rect x="14" y="60" width="38" height="130" ${s(3)}/><rect x="148" y="60" width="38" height="130" ${s(3)}/>${[0,1,2,3].map(i=>`<rect x="${14+i*10}" y="50" width="8" height="10" ${s(2)}/>`).join('')}${[0,1,2,3].map(i=>`<rect x="${148+i*10}" y="50" width="8" height="10" ${s(2)}/>`).join('')}${[0,1,2,3,4,5].map(i=>`<rect x="${34+i*17}" y="80" width="11" height="11" ${s(2)}/>`).join('')}<path d="M86,190 L86,155 Q100,140 114,155 L114,190" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/><rect x="46" y="100" width="14" height="16" rx="2" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="4 2"/><rect x="140" y="100" width="14" height="16" rx="2" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="4 2"/><rect x="80" y="100" width="12" height="14" rx="2" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="4 2"/><rect x="108" y="100" width="12" height="14" rx="2" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="4 2"/></svg>`},
+    {name:'¡Listo!',hint:'Añade <b>banderas, nubes</b> y detalles de piedras',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="90" width="140" height="100" ${sf('rgba(200,190,230,0.1)',C.ol,3)}/><rect x="14" y="60" width="38" height="130" ${sf('rgba(200,190,230,0.1)',C.ol,3)}/><rect x="148" y="60" width="38" height="130" ${sf('rgba(200,190,230,0.1)',C.ol,3)}/>${[0,1,2,3].map(i=>`<rect x="${14+i*10}" y="50" width="8" height="10" ${s(2)}/>`).join('')}${[0,1,2,3].map(i=>`<rect x="${148+i*10}" y="50" width="8" height="10" ${s(2)}/>`).join('')}${[0,1,2,3,4,5].map(i=>`<rect x="${34+i*17}" y="80" width="11" height="11" ${s(2)}/>`).join('')}<path d="M86,190 L86,155 Q100,140 114,155 L114,190" ${sf('rgba(100,80,60,0.4)',C.ol,2.5)}/><rect x="46" y="100" width="14" height="16" rx="2" ${sf('rgba(147,197,253,0.3)',C.ol,2)}/><rect x="140" y="100" width="14" height="16" rx="2" ${sf('rgba(147,197,253,0.3)',C.ol,2)}/><rect x="80" y="100" width="12" height="14" rx="2" ${sf('rgba(147,197,253,0.3)',C.ol,2)}/><rect x="108" y="100" width="12" height="14" rx="2" ${sf('rgba(147,197,253,0.3)',C.ol,2)}/><line x1="33" y1="50" x2="33" y2="30" stroke="${C.ol}" stroke-width="1.5"/><path d="M33,30 L52,36 L33,42" fill="rgba(239,68,68,0.6)" stroke="${C.ol}" stroke-width="1"/><line x1="167" y1="50" x2="167" y2="30" stroke="${C.ol}" stroke-width="1.5"/><path d="M167,30 L186,36 L167,42" fill="rgba(251,191,36,0.6)" stroke="${C.ol}" stroke-width="1"/></svg>`}
+  ]},
+
+  {id:10,name:'Rosa',cat:'Naturaleza',level:'Medio',free:true,emoji:'🌹',steps:[
+    {name:'Espiral',hint:'Empieza con una <b>espiral en el centro</b> — el cogollo de la rosa',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path d="M100,100 Q108,92 110,100 Q112,112 100,115 Q82,118 80,100 Q78,76 100,72 Q126,68 130,100 Q134,136 100,140 Q58,144 56,100" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/></svg>`},
+    {name:'Pétalos',hint:'Pétalos curvos <b>alrededor de la espiral</b>, capa por capa',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path d="M100,100 Q108,92 110,100 Q112,112 100,115 Q82,118 80,100 Q78,76 100,72 Q126,68 130,100 Q134,136 100,140 Q58,144 56,100" ${s(2.5)}/><path d="M56,100 Q45,70 65,52 Q85,34 100,44" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/><path d="M100,44 Q115,34 135,52 Q155,72 144,100" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/><path d="M144,100 Q155,130 135,148 Q115,166 100,156" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/><path d="M100,156 Q85,166 65,148 Q45,130 56,100" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/></svg>`},
+    {name:'Más pétalos',hint:'Segunda capa de pétalos más <b>grandes y abiertos</b>',
+     svg:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path d="M100,100 Q108,92 110,100 Q112,112 100,115 Q82,118 80,100 Q78,76 100,72 Q126,68 130,100 Q134,136 100,140 Q58,144 56,100" ${s(2)}/><path d="M56,100 Q45,70 65,52 Q85,34 100,44" ${s(2)}/><path d="M100,44 Q115,34 135,52 Q155,72 144,100" ${s(2)}/><path d="M144,100 Q155,130 135,148 Q115,166 100,156" ${s(2)}/><path d="M100,156 Q85,166 65,148 Q45,130 56,100" ${s(2)}/><path d="M42,74 Q18,40 52,20 Q80,6 100,28" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/><path d="M100,28 Q118,6 148,20 Q182,40 158,74" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/><path d="M158,126 Q180,162 148,180 Q118,194 100,172" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/><path d="M100,172 Q80,194 52,180 Q18,162 42,126" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/></svg>`},
+    {name:'Tallo/hojas',hint:'Tallo con espinas y <b>hojas dentadas</b>',
+     svg:`<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg"><path d="M100,180 Q96,210 98,240" stroke="${C.tl}" stroke-width="3.5" fill="none" stroke-dasharray="8 3"/><path d="M98,200 Q74,185 62,196 Q78,210 98,206" stroke="${C.tl}" stroke-width="2.5" fill="rgba(74,222,128,0.2)" stroke-dasharray="5 2"/><path d="M99,218 Q122,202 134,212 Q118,226 99,224" stroke="${C.tl}" stroke-width="2.5" fill="rgba(74,222,128,0.2)" stroke-dasharray="5 2"/><path d="M100,100 Q108,92 110,100 Q112,112 100,115 Q82,118 80,100 Q78,76 100,72 Q126,68 130,100 Q134,136 100,140 Q58,144 56,100" ${s(2)}/><path d="M56,100 Q45,70 65,52 Q85,34 100,44" ${s(2)}/><path d="M100,44 Q115,34 135,52 Q155,72 144,100" ${s(2)}/><path d="M144,100 Q155,130 135,148 Q115,166 100,156" ${s(2)}/><path d="M100,156 Q85,166 65,148 Q45,130 56,100" ${s(2)}/><path d="M42,74 Q18,40 52,20 Q80,6 100,28" ${s(2)}/><path d="M100,28 Q118,6 148,20 Q182,40 158,74" ${s(2)}/><path d="M158,126 Q180,162 148,180 Q118,194 100,172" ${s(2)}/><path d="M100,172 Q80,194 52,180 Q18,162 42,126" ${s(2)}/></svg>`},
+    {name:'¡Lista!',hint:'Rellena con <b>sombras rosadas</b> y detalles de venas',
+     svg:`<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg"><path d="M100,100 Q108,92 110,100 Q112,112 100,115 Q82,118 80,100 Q78,76 100,72 Q126,68 130,100 Q134,136 100,140 Q58,144 56,100" ${sf('rgba(244,114,182,0.3)',C.ol,2)}/><path d="M56,100 Q45,70 65,52 Q85,34 100,44" ${sf('rgba(244,114,182,0.2)',C.ol,2)}/><path d="M100,44 Q115,34 135,52 Q155,72 144,100" ${sf('rgba(244,114,182,0.2)',C.ol,2)}/><path d="M144,100 Q155,130 135,148 Q115,166 100,156" ${sf('rgba(244,114,182,0.2)',C.ol,2)}/><path d="M100,156 Q85,166 65,148 Q45,130 56,100" ${sf('rgba(244,114,182,0.2)',C.ol,2)}/><path d="M42,74 Q18,40 52,20 Q80,6 100,28" ${sf('rgba(244,114,182,0.15)',C.ol,2)}/><path d="M100,28 Q118,6 148,20 Q182,40 158,74" ${sf('rgba(244,114,182,0.15)',C.ol,2)}/><path d="M158,126 Q180,162 148,180 Q118,194 100,172" ${sf('rgba(244,114,182,0.15)',C.ol,2)}/><path d="M100,172 Q80,194 52,180 Q18,162 42,126" ${sf('rgba(244,114,182,0.15)',C.ol,2)}/><path d="M100,180 Q96,210 98,240" ${s(3.5)}/><path d="M98,200 Q74,185 62,196 Q78,210 98,206" ${sf('rgba(74,222,128,0.4)',C.ol,2)}/><path d="M99,218 Q122,202 134,212 Q118,226 99,224" ${sf('rgba(74,222,128,0.4)',C.ol,2)}/></svg>`}
+  ]},
+
+  // ─── DIFÍCIL ───
+  {id:11,name:'Dragón',cat:'Fantástico',level:'Difícil',free:true,emoji:'🐉',steps:[
+    {name:'Cuerpo',hint:'Cuerpo <b>serpentino y largo</b> con curvas pronunciadas',
+     svg:`<svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg"><path d="M40,160 Q20,120 60,90 Q100,60 110,80 Q120,100 160,70 Q200,40 210,60" stroke="${C.tl}" stroke-width="4" fill="none" stroke-dasharray="10 4"/><path d="M40,160 Q20,120 60,88 Q100,58 110,78 Q120,98 160,68 Q200,38 210,58" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="10 4" transform="translate(2 6)"/></svg>`},
+    {name:'Cabeza',hint:'Cabeza <b>angular y amenazadora</b> con hocico pronunciado',
+     svg:`<svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg"><path d="M40,160 Q20,120 60,90 Q100,60 115,76 Q125,96 162,68 Q200,40 208,60" ${s(3.5)}/><path d="M210,58 Q224,50 232,56 Q236,64 228,70 Q238,80 232,86 Q242,96 230,98 Q226,110 210,102 Q196,96 192,82 Q196,68 210,58" stroke="${C.tl}" stroke-width="3" fill="rgba(74,222,128,0.1)" stroke-dasharray="7 3"/></svg>`},
+    {name:'Alas',hint:'Alas membranosas con <b>huesos visibles</b> en las alas',
+     svg:`<svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg"><path d="M40,160 Q20,120 60,90 Q100,60 115,76 Q125,96 162,68 Q200,40 208,60" ${s(3.5)}/><path d="M210,58 Q224,50 232,56 Q236,64 228,70 Q238,80 232,86 Q242,96 230,98 Q226,110 210,102 Q196,96 192,82 Q196,68 210,58" ${sf('rgba(74,222,128,0.1)',C.ol,2.5)}/><path d="M100,75 Q70,40 40,20 Q20,10 15,20 Q20,40 50,55 Q70,65 100,75" stroke="${C.tl}" stroke-width="2.5" fill="rgba(124,58,237,0.15)" stroke-dasharray="6 2"/><path d="M100,75 L40,20" stroke="${C.tl}" stroke-width="1.5" stroke-dasharray="4 2"/><path d="M100,75 L30,30" stroke="${C.tl}" stroke-width="1.5" stroke-dasharray="4 2"/><path d="M115,76 Q145,36 165,15 Q185,5 188,16 Q185,35 165,50 Q145,65 115,76" stroke="${C.tl}" stroke-width="2.5" fill="rgba(124,58,237,0.15)" stroke-dasharray="6 2"/><path d="M115,76 L165,15" stroke="${C.tl}" stroke-width="1.5" stroke-dasharray="4 2"/><path d="M115,76 L175,20" stroke="${C.tl}" stroke-width="1.5" stroke-dasharray="4 2"/></svg>`},
+    {name:'Patas/garras',hint:'Patas poderosas con <b>garras afiladas</b> y escamas',
+     svg:`<svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg"><path d="M40,160 Q20,120 60,90 Q100,60 115,76 Q125,96 162,68 Q200,40 208,60" ${s(3.5)}/><path d="M210,58 Q224,50 232,56 Q236,64 228,70 Q238,80 232,86 Q242,96 230,98 Q226,110 210,102 Q196,96 192,82 Q196,68 210,58" ${sf('rgba(74,222,128,0.1)',C.ol,2.5)}/><path d="M100,75 Q70,40 40,20 Q20,10 15,20 Q20,40 50,55 Q70,65 100,75" ${sf('rgba(124,58,237,0.12)',C.ol,2)}/><path d="M115,76 Q145,36 165,15 Q185,5 188,16 Q185,35 165,50 Q145,65 115,76" ${sf('rgba(124,58,237,0.12)',C.ol,2)}/><path d="M60,90 L55,120 L48,140" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="6 2"/><path d="M48,140 L38,148 M48,140 L46,150 M48,140 L56,150" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="4 1"/><path d="M80,78 L82,108 L78,128" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="6 2"/><path d="M78,128 L68,136 M78,128 L76,140 M78,128 L86,138" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="4 1"/></svg>`},
+    {name:'Fuego',hint:'¡Llamas que salen del hocico con capas de <b>colores ardientes</b>!',
+     svg:`<svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg"><path d="M40,160 Q20,120 60,90 Q100,60 115,76 Q125,96 162,68 Q200,40 208,60" ${sf('rgba(74,222,128,0.08)',C.ol,3)}/><path d="M210,58 Q224,50 232,56 Q236,64 228,70 Q238,80 232,86 Q242,96 230,98 Q226,110 210,102 Q196,96 192,82 Q196,68 210,58" ${sf('rgba(74,222,128,0.12)',C.ol,2.5)}/><path d="M100,75 Q70,40 40,20 Q20,10 15,20 Q20,40 50,55 Q70,65 100,75" ${sf('rgba(124,58,237,0.15)',C.ol,2)}/><path d="M115,76 Q145,36 165,15 Q185,5 188,16 Q185,35 165,50 Q145,65 115,76" ${sf('rgba(124,58,237,0.15)',C.ol,2)}/><path d="M60,90 L55,120 L48,140" ${s(3)}/><path d="M48,140 L38,148 M48,140 L46,150 M48,140 L56,150" ${s(2)}/><path d="M80,78 L82,108 L78,128" ${s(3)}/><path d="M78,128 L68,136 M78,128 L76,140 M78,128 L86,138" ${s(2)}/><path d="M230,62 Q250,40 270,30 Q290,20 280,40 Q270,50 275,60 Q290,45 300,55 Q295,70 275,68" fill="rgba(239,68,68,0.5)" stroke="${C.ol}" stroke-width="2"/><path d="M230,62 Q248,48 260,42 Q272,36 266,52 Q260,60 265,66 Q278,55 284,64 Q280,74 264,72" fill="rgba(251,191,36,0.5)" stroke="${C.ol}" stroke-width="1.5"/><path d="M230,62 Q244,54 252,50 Q260,46 256,58 Q252,64 256,68 Q264,60 268,68" fill="rgba(254,240,138,0.7)" stroke="${C.ol}" stroke-width="1"/></svg>`}
+  ]},
+
+  {id:12,name:'Sirena',cat:'Fantástico',level:'Difícil',free:true,emoji:'🧜',steps:[
+    {name:'Torso',hint:'Torso humano con <b>hombros y cintura</b> bien definidos',
+     svg:`<svg viewBox="0 0 180 220" xmlns="http://www.w3.org/2000/svg"><path d="M60,40 Q45,55 45,80 Q45,110 55,120 Q70,130 90,128 Q110,130 125,120 Q135,110 135,80 Q135,55 120,40 Q105,28 90,28 Q75,28 60,40" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="9 3"/></svg>`},
+    {name:'Cola',hint:'Cola de pez <b>elegante y curvada</b> desde la cintura',
+     svg:`<svg viewBox="0 0 180 260" xmlns="http://www.w3.org/2000/svg"><path d="M60,40 Q45,55 45,80 Q45,110 55,120 Q70,130 90,128 Q110,130 125,120 Q135,110 135,80 Q135,55 120,40 Q105,28 90,28 Q75,28 60,40" ${s(3)}/><path d="M55,122 Q45,160 50,190 Q58,220 90,240 Q122,220 130,190 Q135,160 125,122" stroke="${C.tl}" stroke-width="3" fill="rgba(20,184,166,0.15)" stroke-dasharray="8 3"/><path d="M90,240 Q65,250 48,240 Q56,255 90,260 Q124,255 132,240 Q115,250 90,240" stroke="${C.tl}" stroke-width="2.5" fill="rgba(20,184,166,0.2)" stroke-dasharray="6 2"/></svg>`},
+    {name:'Cabeza/pelo',hint:'Cabeza redonda con <b>cabello ondulado</b> que fluye',
+     svg:`<svg viewBox="0 0 180 260" xmlns="http://www.w3.org/2000/svg"><path d="M60,40 Q45,55 45,80 Q45,110 55,120 Q70,130 90,128 Q110,130 125,120 Q135,110 135,80 Q135,55 120,40 Q105,28 90,28 Q75,28 60,40" ${s(3)}/><path d="M55,122 Q45,160 50,190 Q58,220 90,240 Q122,220 130,190 Q135,160 125,122" ${sf('rgba(20,184,166,0.12)',C.ol,3)}/><path d="M90,240 Q65,250 48,240 Q56,255 90,260 Q124,255 132,240 Q115,250 90,240" ${sf('rgba(20,184,166,0.18)',C.ol,2)}/><circle cx="90" cy="18" r="20" stroke="${C.tl}" stroke-width="3" fill="none" stroke-dasharray="7 3"/><path d="M70,6 Q55,-5 50,12 Q48,28 55,38" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/><path d="M70,6 Q60,-8 68,14 Q72,28 70,40" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="5 2"/><path d="M110,6 Q125,-5 130,12 Q132,28 125,38" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="6 2"/></svg>`},
+    {name:'Escamas',hint:'Escamas decorativas <b>en la cola</b> en filas curvas',
+     svg:`<svg viewBox="0 0 180 260" xmlns="http://www.w3.org/2000/svg"><path d="M60,40 Q45,55 45,80 Q45,110 55,120 Q70,130 90,128 Q110,130 125,120 Q135,110 135,80 Q135,55 120,40 Q105,28 90,28 Q75,28 60,40" ${s(3)}/><path d="M55,122 Q45,160 50,190 Q58,220 90,240 Q122,220 130,190 Q135,160 125,122" ${sf('rgba(20,184,166,0.12)',C.ol,2.5)}/><path d="M90,240 Q65,250 48,240 Q56,255 90,260 Q124,255 132,240 Q115,250 90,240" ${sf('rgba(20,184,166,0.18)',C.ol,2)}/><circle cx="90" cy="18" r="20" ${s(2.5)}/><path d="M70,6 Q55,-5 50,12 Q48,28 55,38" ${s(2)}/><path d="M110,6 Q125,-5 130,12 Q132,28 125,38" ${s(2)}/>${[0,1,2,3,4].map(r=>[0,1,2,3].map(i=>`<path d="${58+i*17+r*2},${134+r*18} Q${66+i*17+r*2},${126+r*18} ${75+i*17+r*2},${134+r*18}" stroke="${C.tl}" stroke-width="1.5" fill="none" stroke-dasharray="3 1"/>`).join('')).join('')}</svg>`},
+    {name:'¡Lista!',hint:'Añade ojos expresivos, color a la cola y <b>brillo en el pelo</b>',
+     svg:`<svg viewBox="0 0 180 260" xmlns="http://www.w3.org/2000/svg"><path d="M60,40 Q45,55 45,80 Q45,110 55,120 Q70,130 90,128 Q110,130 125,120 Q135,110 135,80 Q135,55 120,40 Q105,28 90,28 Q75,28 60,40" ${sf('rgba(255,220,200,0.15)',C.ol,3)}/><path d="M55,122 Q45,160 50,190 Q58,220 90,240 Q122,220 130,190 Q135,160 125,122" ${sf('rgba(20,184,166,0.25)',C.ol,2.5)}/><path d="M90,240 Q65,250 48,240 Q56,255 90,260 Q124,255 132,240 Q115,250 90,240" ${sf('rgba(20,184,166,0.35)',C.ol,2)}/><circle cx="90" cy="18" r="20" ${sf('rgba(255,220,200,0.15)',C.ol,2.5)}/><path d="M70,6 Q55,-5 50,12 Q48,28 55,38" ${sf('rgba(244,114,182,0.3)',C.ol,2)}/><path d="M110,6 Q125,-5 130,12 Q132,28 125,38" ${sf('rgba(244,114,182,0.3)',C.ol,2)}/><ellipse cx="82" cy="16" rx="5" ry="4" fill="#2c1a5e" stroke="${C.ol}" stroke-width="1.5"/><ellipse cx="98" cy="16" rx="5" ry="4" fill="#2c1a5e" stroke="${C.ol}" stroke-width="1.5"/><circle cx="84" cy="14" r="1.5" fill="white"/><circle cx="100" cy="14" r="1.5" fill="white"/><path d="M84,24 Q90,28 96,24" stroke="${C.ol}" stroke-width="1.5" fill="none"/>${[0,1,2,3,4].map(r=>[0,1,2,3].map(i=>`<path d="${58+i*17+r*2},${134+r*18} Q${66+i*17+r*2},${126+r*18} ${75+i*17+r*2},${134+r*18}" stroke="${C.mi}" stroke-width="1.5" fill="none"/>`).join('')).join('')}</svg>`}
+  ]},
+
+  // ─── EXPERTO ───
+  {id:13,name:'Retrato',cat:'Personas',level:'Experto',free:true,emoji:'👤',steps:[
+    {name:'Proporciones',hint:'La cabeza tiene <b>óvalo y líneas guía</b> para centrar los rasgos',
+     svg:`<svg viewBox="0 0 180 220" xmlns="http://www.w3.org/2000/svg"><ellipse cx="90" cy="95" rx="60" ry="75" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="8 3"/><line x1="90" y1="20" x2="90" y2="170" stroke="${C.tl}" stroke-width="1.5" stroke-dasharray="5 3"/><line x1="30" y1="95" x2="150" y2="95" stroke="${C.tl}" stroke-width="1.5" stroke-dasharray="5 3"/><line x1="30" y1="120" x2="150" y2="120" stroke="${C.tl}" stroke-width="1" stroke-dasharray="4 3"/><text x="90" y="215" text-anchor="middle" font-size="10" fill="${C.tl}" font-family="Nunito">líneas guía de proporción</text></svg>`},
+    {name:'Ojos',hint:'Los ojos van <b>en la línea central</b> — separados por el ancho de un ojo',
+     svg:`<svg viewBox="0 0 180 220" xmlns="http://www.w3.org/2000/svg"><ellipse cx="90" cy="95" rx="60" ry="75" ${s(2.5)}/><line x1="30" y1="95" x2="150" y2="95" stroke="${C.li}" stroke-width="1" stroke-dasharray="3 3"/><path d="M52,93 Q62,84 72,93 Q62,102 52,93" stroke="${C.tl}" stroke-width="2.5" fill="#2c1a5e" stroke-dasharray="5 2"/><path d="M108,93 Q118,84 128,93 Q118,102 108,93" stroke="${C.tl}" stroke-width="2.5" fill="#2c1a5e" stroke-dasharray="5 2"/><circle cx="64" cy="90" r="3" fill="white"/><circle cx="120" cy="90" r="3" fill="white"/><path d="M50,89 Q62,82 74,89" stroke="${C.tl}" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/><path d="M106,89 Q118,82 130,89" stroke="${C.tl}" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/></svg>`},
+    {name:'Nariz',hint:'La nariz: <b>dos aletas y el puente</b>, sin exceso de líneas',
+     svg:`<svg viewBox="0 0 180 220" xmlns="http://www.w3.org/2000/svg"><ellipse cx="90" cy="95" rx="60" ry="75" ${s(2.5)}/><path d="M52,93 Q62,84 72,93 Q62,102 52,93" ${sf('#2c1a5e',C.ol,2)}/><path d="M108,93 Q118,84 128,93 Q118,102 108,93" ${sf('#2c1a5e',C.ol,2)}/><circle cx="64" cy="90" r="3" fill="white"/><circle cx="120" cy="90" r="3" fill="white"/><path d="M84,88 Q88,96 90,106" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="5 2"/><path d="M96,88 Q92,96 90,106" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="5 2"/><path d="M80,115 Q90,120 100,115" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="5 2"/><ellipse cx="83" cy="114" rx="5" ry="3.5" stroke="${C.tl}" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/><ellipse cx="97" cy="114" rx="5" ry="3.5" stroke="${C.tl}" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/></svg>`},
+    {name:'Boca',hint:'Labios con <b>arco de cupido</b> y volumen con sombras',
+     svg:`<svg viewBox="0 0 180 220" xmlns="http://www.w3.org/2000/svg"><ellipse cx="90" cy="95" rx="60" ry="75" ${s(2.5)}/><path d="M52,93 Q62,84 72,93 Q62,102 52,93" ${sf('#2c1a5e',C.ol,2)}/><path d="M108,93 Q118,84 128,93 Q118,102 108,93" ${sf('#2c1a5e',C.ol,2)}/><circle cx="64" cy="90" r="3" fill="white"/><circle cx="120" cy="90" r="3" fill="white"/><path d="M84,88 Q88,96 90,106" ${s(2)}/><path d="M96,88 Q92,96 90,106" ${s(2)}/><path d="M80,115 Q90,120 100,115" ${s(2)}/><ellipse cx="83" cy="114" rx="5" ry="3.5" ${s(1.5)}/><ellipse cx="97" cy="114" rx="5" ry="3.5" ${s(1.5)}/><path d="M73,132 Q81,128 90,126 Q99,128 107,132" stroke="${C.tl}" stroke-width="2.5" fill="none" stroke-dasharray="5 2"/><path d="M73,132 Q90,145 107,132" stroke="${C.tl}" stroke-width="2" fill="rgba(244,114,182,0.2)" stroke-dasharray="5 2"/><path d="M80,131 Q90,127 100,131" stroke="${C.tl}" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/></svg>`},
+    {name:'Pelo/cuello',hint:'El pelo define el carácter — <b>trazos en la dirección del cabello</b>',
+     svg:`<svg viewBox="0 0 180 240" xmlns="http://www.w3.org/2000/svg"><ellipse cx="90" cy="95" rx="60" ry="75" ${s(2.5)}/><path d="M52,93 Q62,84 72,93 Q62,102 52,93" ${sf('#2c1a5e',C.ol,2)}/><path d="M108,93 Q118,84 128,93 Q118,102 108,93" ${sf('#2c1a5e',C.ol,2)}/><circle cx="64" cy="90" r="3" fill="white"/><circle cx="120" cy="90" r="3" fill="white"/><path d="M84,88 Q88,96 90,106" ${s(2)}/><path d="M96,88 Q92,96 90,106" ${s(2)}/><path d="M80,115 Q90,120 100,115" ${s(2)}/><ellipse cx="83" cy="114" rx="5" ry="3.5" ${s(1.5)}/><ellipse cx="97" cy="114" rx="5" ry="3.5" ${s(1.5)}/><path d="M73,132 Q81,128 90,126 Q99,128 107,132" ${s(2)}/><path d="M73,132 Q90,145 107,132" ${sf('rgba(244,114,182,0.2)',C.ol,2)}/><line x1="76" y1="170" x2="76" y2="220" stroke="${C.tl}" stroke-width="2.5" stroke-dasharray="7 3"/><line x1="104" y1="170" x2="104" y2="220" stroke="${C.tl}" stroke-width="2.5" stroke-dasharray="7 3"/><path d="M30,22 Q46,14 60,18 Q55,40 44,55 Q36,44 30,22" stroke="${C.tl}" stroke-width="2.5" fill="rgba(100,80,50,0.25)" stroke-dasharray="6 2"/><path d="M150,22 Q134,14 120,18 Q125,40 136,55 Q144,44 150,22" stroke="${C.tl}" stroke-width="2.5" fill="rgba(100,80,50,0.25)" stroke-dasharray="6 2"/><path d="M30,22 Q28,60 35,90" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="5 2"/><path d="M150,22 Q152,60 145,90" stroke="${C.tl}" stroke-width="2" fill="none" stroke-dasharray="5 2"/></svg>`}
+  ]},
+
+  {id:14,name:'Paisaje',cat:'Naturaleza',level:'Experto',free:true,emoji:'🌄',steps:[
+    {name:'Horizonte',hint:'La línea del horizonte divide el cielo y la tierra — <b>no en el centro</b>',
+     svg:`<svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg"><line x1="10" y1="110" x2="230" y2="110" stroke="${C.tl}" stroke-width="2.5" stroke-dasharray="9 3"/><text x="120" y="104" text-anchor="middle" font-size="10" fill="${C.tl}" font-family="Nunito">horizonte — a 2/3 de altura</text><rect x="10" y="10" width="220" height="100" fill="rgba(147,197,253,0.05)" stroke="${C.li}" stroke-width="1" stroke-dasharray="4 4"/><rect x="10" y="112" width="220" height="62" fill="rgba(74,222,128,0.05)" stroke="${C.li}" stroke-width="1" stroke-dasharray="4 4"/></svg>`},
+    {name:'Montañas',hint:'Montañas con <b>siluetas escalonadas</b> — más oscuras al frente',
+     svg:`<svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg"><line x1="10" y1="110" x2="230" y2="110" stroke="${C.li}" stroke-width="1" stroke-dasharray="5 3"/><path d="M10,110 Q40,60 70,80 Q100,50 130,70 Q160,40 190,68 Q210,78 230,110 Z" stroke="${C.tl}" stroke-width="2.5" fill="rgba(100,80,140,0.12)" stroke-dasharray="7 3"/><path d="M10,110 Q50,78 80,88 Q100,68 120,84 Q150,72 170,88 Q200,94 230,110 Z" stroke="${C.tl}" stroke-width="2.5" fill="rgba(80,120,80,0.15)" stroke-dasharray="7 3"/></svg>`},
+    {name:'Árboles',hint:'Silueta de árboles en primer plano — <b>bien oscuros</b>',
+     svg:`<svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg"><path d="M10,110 Q40,60 70,80 Q100,50 130,70 Q160,40 190,68 Q210,78 230,110" ${sf('rgba(100,80,140,0.1)',C.ol,2)}/><path d="M10,110 Q50,78 80,88 Q100,68 120,84 Q150,72 170,88 Q200,94 230,110" ${sf('rgba(80,120,80,0.12)',C.ol,2)}/><line x1="10" y1="110" x2="230" y2="110" stroke="${C.li}" stroke-width="1"/><path d="M10,110 L10,170 L230,170 L230,110 Q200,112 180,114 Q150,118 130,114 Q100,110 80,114 Q50,118 30,114 Z" fill="rgba(30,40,20,0.3)" stroke="${C.tl}" stroke-width="2" stroke-dasharray="7 3"/><path d="M20,110 Q22,90 28,84 Q34,90 36,110" stroke="${C.tl}" stroke-width="1.5" fill="rgba(20,50,20,0.4)" stroke-dasharray="4 2"/><path d="M50,110 Q53,85 60,78 Q67,85 70,110" stroke="${C.tl}" stroke-width="1.5" fill="rgba(20,50,20,0.4)" stroke-dasharray="4 2"/><path d="M190,110 Q193,88 200,80 Q207,88 210,110" stroke="${C.tl}" stroke-width="1.5" fill="rgba(20,50,20,0.4)" stroke-dasharray="4 2"/></svg>`},
+    {name:'Cielo/sol',hint:'Sol con <b>rayos degradados</b> y nubes esponjosas',
+     svg:`<svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg"><path d="M10,110 Q40,60 70,80 Q100,50 130,70 Q160,40 190,68 Q210,78 230,110" ${sf('rgba(100,80,140,0.1)',C.ol,2)}/><path d="M10,110 Q50,78 80,88 Q100,68 120,84 Q150,72 170,88 Q200,94 230,110" ${sf('rgba(80,120,80,0.12)',C.ol,2)}/><path d="M10,110 L10,170 L230,170 L230,110" fill="rgba(30,40,20,0.25)"/><circle cx="190" cy="45" r="22" stroke="${C.tl}" stroke-width="2.5" fill="rgba(251,191,36,0.3)" stroke-dasharray="6 2"/>${[0,1,2,3,4,5,6,7].map(i=>{const a=i*45*Math.PI/180;const x1=190+26*Math.cos(a),y1=45+26*Math.sin(a),x2=190+34*Math.cos(a),y2=45+34*Math.sin(a);return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${C.tl}" stroke-width="2" stroke-dasharray="4 2"/>`}).join('')}<path d="M40,55 Q50,45 62,50 Q58,38 70,36 Q80,34 84,44 Q92,38 98,46 Q100,38 108,38 Q118,36 118,46 Q128,42 130,52 Q120,50 40,55 Z" stroke="${C.tl}" stroke-width="1.5" fill="rgba(240,240,255,0.25)" stroke-dasharray="5 2"/></svg>`},
+    {name:'¡Listo!',hint:'Añade <b>agua reflectante o camino</b> en primer plano',
+     svg:`<svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg"><path d="M10,110 Q40,60 70,80 Q100,50 130,70 Q160,40 190,68 Q210,78 230,110" ${sf('rgba(100,80,140,0.18)',C.ol,2.5)}/><path d="M10,110 Q50,78 80,88 Q100,68 120,84 Q150,72 170,88 Q200,94 230,110" ${sf('rgba(80,120,80,0.2)',C.ol,2.5)}/><line x1="10" y1="110" x2="230" y2="110" stroke="${C.ol}" stroke-width="1.5"/><path d="M10,110 L10,170 L230,170 L230,110" fill="rgba(30,40,20,0.3)"/><path d="M20,110 Q22,90 28,84 Q34,90 36,110" ${sf('rgba(20,50,20,0.5)',C.ol,1.5)}/><path d="M50,110 Q53,85 60,78 Q67,85 70,110" ${sf('rgba(20,50,20,0.5)',C.ol,1.5)}/><path d="M190,110 Q193,88 200,80 Q207,88 210,110" ${sf('rgba(20,50,20,0.5)',C.ol,1.5)}/><circle cx="190" cy="45" r="22" ${sf('rgba(251,191,36,0.35)',C.ol,2.5)}/><path d="M40,55 Q70,44 130,52 Z" fill="rgba(240,240,255,0.25)" stroke="${C.ol}" stroke-width="1.5"/><path d="M90,170 L100,110 L150,170 Z" fill="rgba(200,180,140,0.4)" stroke="${C.ol}" stroke-width="1.5"/><line x1="10" y1="130" x2="230" y2="130" stroke="rgba(147,197,253,0.3)" stroke-width="1.5" stroke-dasharray="8 5"/><line x1="10" y1="148" x2="230" y2="148" stroke="rgba(147,197,253,0.2)" stroke-width="1.5" stroke-dasharray="8 5"/></svg>`}
+  ]},
+];
+
+// ============================================================
+// CATALOG THUMBS (final step svg, small)
+// ============================================================
+function getThumb(d){
+  if(!d.steps||!d.steps.length)return `<div style="font-size:50px;line-height:1">${d.emoji}</div>`;
+  return d.steps[d.steps.length-1].svg;
+}
+
+// ============================================================
+// STATE
+// ============================================================
+const ST={
+  avatar:'🐊',selAv:null,tab:'catalog',
+  lesson:null,step:0,completed:[],
+  activeLvl:'Todo',searchQ:'',
+  aiGenerating:false,aiLessons:[],
+};
+
+const AVATARS=[
+  {e:'🐊',bg:'#15803d'},{e:'🦊',bg:'#c2410c'},{e:'🐯',bg:'#b45309'},{e:'🦒',bg:'#a16207'},
+  {e:'🐼',bg:'#374151'},{e:'🦄',bg:'#7c3aed'},{e:'🐱',bg:'#0369a1'},{e:'🐨',bg:'#4b5563'},
+  {e:'🦥',bg:'#65a30d'},{e:'🐷',bg:'#db2777'},{e:'🐰',bg:'#0891b2'},{e:'🐻',bg:'#92400e'},
+];
+
+// ============================================================
+// NAV
+// ============================================================
+function goTo(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function switchTab(t){
+  ST.tab=t;
+  ['catalog','journal'].forEach(x=>{
+    document.getElementById('tab-'+x).style.display=x===t?'block':'none';
+    document.getElementById('nb-'+(x==='catalog'?'cat':'jour')).classList.toggle('active',x===t);
+  });
+  if(t==='journal')renderJournal();
+}
+function backToApp(){goTo('s-app')}
+
+// ============================================================
+// AVATAR
+// ============================================================
+function buildAvGrid(){
+  const g=document.getElementById('av-grid');g.innerHTML='';
+  AVATARS.forEach(av=>{
+    const d=document.createElement('div');d.className='av-item';d.style.background=av.bg;
+    d.innerHTML=`${av.e}<div class="av-ck">✓</div>`;
+    d.onclick=()=>{document.querySelectorAll('.av-item').forEach(i=>i.classList.remove('sel'));d.classList.add('sel');ST.selAv=av;document.getElementById('av-btn').disabled=false};
+    g.appendChild(d);
+  });
+}
+function finishOb(){
+  if(ST.selAv){ST.avatar=ST.selAv.e;document.getElementById('sn-av').textContent=ST.avatar;document.getElementById('l-av').textContent=ST.avatar}
+  initApp();goTo('s-app');toast('¡Bienvenido! ✦ Elige qué quieres dibujar');
+}
+function initApp(){buildLevelTabs();renderCatalog()}
+
+// ============================================================
+// LEVEL TABS
+// ============================================================
+const LEVELS=['Todo','Fácil','Medio','Difícil','Experto'];
+function buildLevelTabs(){
+  const el=document.getElementById('level-tabs');el.innerHTML='';
+  LEVELS.forEach(lv=>{
+    const b=document.createElement('button');
+    b.className='ltab'+(lv==='Todo'?' active':'');
+    b.dataset.level=lv;b.textContent=lv==='Todo'?'✦ Todo':lv;
+    b.onclick=()=>{document.querySelectorAll('.ltab').forEach(x=>x.classList.remove('active'));b.classList.add('active');ST.activeLvl=lv;renderCatalog()};
+    el.appendChild(b);
+  });
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+function onSearch(q){
+  ST.searchQ=q.toLowerCase().trim();
+  renderCatalog();
+}
+function onSearchBtn(){
+  const q=document.getElementById('search-input').value.toLowerCase().trim();
+  if(!q)return;
+  ST.searchQ=q;
+  renderCatalog();
+}
+
+function getFilteredDrawings(){
+  const all=[...DB,...ST.aiLessons];
+  let list=all;
+  if(ST.activeLvl!=='Todo') list=list.filter(d=>d.level===ST.activeLvl);
+  if(ST.searchQ){
+    list=list.filter(d=>
+      d.name.toLowerCase().includes(ST.searchQ)||
+      d.cat.toLowerCase().includes(ST.searchQ)||
+      d.emoji.includes(ST.searchQ)
+    );
+  }
+  return list;
+}
+
+function renderCatalog(){
+  const list=getFilteredDrawings();
+  const grid=document.getElementById('draw-grid');
+  const aiPanel=document.getElementById('ai-panel');
+
+  // Show AI panel if search has no results
+  if(ST.searchQ&&!list.length){
+    aiPanel.classList.add('show');
+    document.getElementById('ai-input').value=ST.searchQ;
+  } else {
+    aiPanel.classList.remove('show');
+  }
+
+  grid.innerHTML='';
+  if(!list.length){
+    grid.innerHTML=`<div class="empty-search" style="grid-column:1/-1">
+      <div class="es-icon">🔍</div>
+      <p>No encontramos "<b>${ST.searchQ}</b>"<br>¡Usa el generador IA para crearlo!</p>
+    </div>`;
+    return;
+  }
+
+  // Group by level when showing 'Todo'
+  if(ST.activeLvl==='Todo'&&!ST.searchQ){
+    LEVELS.filter(l=>l!=='Todo').forEach(lv=>{
+      const group=list.filter(d=>d.level===lv);
+      if(!group.length)return;
+      const header=document.createElement('div');
+      header.className='section-header';header.style.gridColumn='1/-1';
+      const lvColors={Fácil:'#16a34a',Medio:'#d97706',Difícil:'#dc2626',Experto:'#7c3aed'};
+      header.innerHTML=`<span style="color:${lvColors[lv]}">${lv}</span>`;
+      grid.appendChild(header);
+      group.forEach(d=>grid.appendChild(makeCard(d)));
+    });
+  } else {
+    list.forEach(d=>grid.appendChild(makeCard(d)));
+  }
+}
+
+function makeCard(d){
+  const isDone=ST.completed.some(c=>c.id===d.id);
+  const isAI=d.aiGenerated;
+  const card=document.createElement('div');
+  card.className='dcard'+(isAI?' ai-generated':'');
+  const lvClass=d.level.toLowerCase().replace('í','i').replace('í','i');
+  card.innerHTML=`
+    <div class="dc-img" style="background:${isAI?'linear-gradient(135deg,rgba(124,58,237,.18),rgba(13,148,136,.12))':'linear-gradient(145deg,#1e1a50,#181440)'}">${getThumb(d)}</div>
+    <div class="dc-body">
+      <div class="dc-name">${d.emoji} ${d.name}</div>
+      <div class="dc-meta">
+        <span class="lv-badge ${lvClass}">${d.level}</span>
+        <span class="dc-steps">${d.steps.length} pasos</span>
+        ${isAI?'<span style="font-size:9px;color:#a78bfa">✦ IA</span>':''}
+      </div>
+    </div>
+    ${isDone?'<div class="done-b">✓</div>':''}
+  `;
+  card.onclick=()=>openLesson(d);
+  return card;
+}
+
+// ============================================================
+// AI GENERATOR
+// ============================================================
+async function generateWithAI(){
+  const input=document.getElementById('ai-input');
+  const subject=input.value.trim()||ST.searchQ;
+  if(!subject||ST.aiGenerating)return;
+
+  ST.aiGenerating=true;
+  const btn=document.getElementById('ai-gen-btn');
+  const status=document.getElementById('ai-status');
+  btn.disabled=true;btn.textContent='Generando...';
+  status.style.display='flex';
+
+  const SYSTEM=`Eres un experto en enseñanza de dibujo para niños. Genera un tutorial de dibujo paso a paso en formato JSON exacto.
+
+El usuario quiere aprender a dibujar: "${subject}"
+
+Devuelve SOLO este JSON (sin markdown ni explicaciones):
+{
+  "name": "nombre del dibujo en español",
+  "emoji": "emoji representativo",
+  "level": "Fácil" | "Medio" | "Difícil",
+  "cat": "Animales" | "Naturaleza" | "Fantástico" | "Mar" | "Construcciones" | "Personas" | "Objetos",
+  "steps": [
+    {
+      "name": "nombre del paso (max 2 palabras)",
+      "hint": "instrucción clara en HTML con <b>palabras clave</b> en negrita (max 15 palabras)",
+      "svg": "SVG completo del estado del dibujo en ese paso"
+    }
+  ]
+}
+
+REGLAS PARA LOS SVGs:
+- viewBox="0 0 200 200" siempre
+- xmlns="http://www.w3.org/2000/svg" siempre
+- Cada SVG muestra el dibujo ACUMULATIVO hasta ese paso
+- El primer paso muestra solo la forma básica con stroke punteado: stroke-dasharray="8 3" stroke="#14b8a6"
+- Los pasos siguientes añaden elementos sin dasharray (ya dibujados) + nuevo elemento con dasharray
+- El último paso muestra todo completado, sin dasharray, con rellenos suaves: fill="rgba(...,0.15)"
+- Usa colores: stroke="#2c1a5e" para líneas finales, fill="none" o fills rgba suaves
+- Mínimo 4 pasos, máximo 6
+- Los SVGs deben ser SVG válido, usando path, circle, ellipse, rect, line, polygon
+- NO uses imágenes externas, NO uses foreignObject`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:4000,
+        system:SYSTEM,
+        messages:[{role:'user',content:`Crea un tutorial de dibujo paso a paso para: ${subject}`}]
+      })
+    });
+    const data=await resp.json();
+    const text=data.content?.map(b=>b.text||'').join('');
+    const clean=text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+    const parsed=JSON.parse(clean);
+
+    const newLesson={
+      id:Date.now(),
+      name:parsed.name,
+      emoji:parsed.emoji||'🎨',
+      cat:parsed.cat||'Objetos',
+      level:parsed.level||'Fácil',
+      free:true,
+      steps:parsed.steps||[],
+      aiGenerated:true,
+    };
+
+    ST.aiLessons.unshift(newLesson);
+    toast(`✦ Tutorial "${newLesson.name}" generado con IA`);
+    document.getElementById('ai-panel').classList.remove('show');
+    document.getElementById('search-input').value='';
+    ST.searchQ='';
+    renderCatalog();
+
+  }catch(e){
+    toast('Error generando el tutorial. Inténtalo de nuevo.');
+    console.error(e);
+  }finally{
+    ST.aiGenerating=false;
+    btn.disabled=false;btn.innerHTML='✦ Generar';
+    status.style.display='none';
+  }
+}
+
+// Enter key on AI input
+document.getElementById('ai-input').addEventListener('keydown',e=>{if(e.key==='Enter')generateWithAI()});
+document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key==='Enter')onSearchBtn()});
+
+// ============================================================
+// LESSON
+// ============================================================
+function openLesson(d){
+  ST.lesson=d;ST.step=0;
+  document.getElementById('l-title').textContent=d.name;
+  buildStepsRow();renderStep();goTo('s-lesson');
+}
+
+function buildStepsRow(){
+  const row=document.getElementById('steps-row');row.innerHTML='';
+  const dots=document.getElementById('step-dots');dots.innerHTML='';
+  ST.lesson.steps.forEach((st,i)=>{
+    const cls=i<ST.step?'done':i===ST.step?'cur':'';
+    const n=document.createElement('div');n.className='snode'+(cls?' '+cls:'');
+    n.innerHTML=`<div class="scirc ${cls}">${i<ST.step?'✓':i+1}</div><div class="slbl">${st.name}</div>`;
+    n.onclick=()=>{ST.step=i;renderStep();buildStepsRow()};
+    if(i>0)n.style.marginLeft='44px';
+    row.appendChild(n);
+    const dot=document.createElement('div');
+    dot.className='dot'+(i<ST.step?' done':i===ST.step?' cur':'');
+    dots.appendChild(dot);
+  });
+  setTimeout(()=>{const c=row.querySelector('.snode.cur');if(c)c.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})},80);
+}
+
+function renderStep(){
+  const d=ST.lesson,st=d.steps[ST.step],isLast=ST.step===d.steps.length-1;
+  document.getElementById('step-counter').textContent=`Paso ${ST.step+1} de ${d.steps.length}`;
+  document.getElementById('lcontent').innerHTML=`
+    <div class="visual-card">
+      <div class="step-badge">${ST.step+1}</div>
+      <div class="step-name-b">${st.name}</div>
+      <div class="visual-svg-wrap">${st.svg}</div>
+      <div class="visual-hint">
+        <div class="hint-icon">${isLast?'🎉':'✏️'}</div>
+        <div class="hint-text">${st.hint}</div>
+      </div>
+    </div>`;
+  const btn=document.getElementById('btn-next');
+  btn.textContent=isLast?'✓ ¡Completar dibujo!':'SIGUIENTE PASO →';
+  btn.className='btn-next'+(isLast?' btn-finish':'');
+  document.getElementById('lcontent').scrollTop=0;
+}
+
+function nextStep(){
+  if(ST.step===ST.lesson.steps.length-1){showDone();return}
+  ST.step++;buildStepsRow();renderStep();
+}
+
+function showDone(){
+  document.getElementById('od-sub').textContent=`¡Increíble! Has dibujado "${ST.lesson.name}" en ${ST.lesson.steps.length} pasos.`;
+  document.getElementById('overlay-done').classList.add('show');
+}
+function saveToDiary(){
+  if(!ST.completed.find(c=>c.id===ST.lesson.id))ST.completed.push(ST.lesson);
+  document.getElementById('overlay-done').classList.remove('show');
+  renderCatalog();toast('🎉 ¡Guardado en tu Diario!');goTo('s-app');
+}
+function closeDone(){document.getElementById('overlay-done').classList.remove('show');goTo('s-app')}
+
+function renderJournal(){
+  const g=document.getElementById('jgrid'),e=document.getElementById('j-empty');
+  g.innerHTML='';
+  if(!ST.completed.length){e.style.display='block';return}
+  e.style.display='none';
+  ST.completed.forEach(d=>{
+    const c=document.createElement('div');c.className='jcard';
+    c.innerHTML=`<div class="ji">${getThumb(d)}</div><div class="jn">${d.emoji} ${d.name}</div><div class="jsh">↑</div>`;
+    c.onclick=()=>openLesson(d);
+    g.appendChild(c);
+  });
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+window.onload=()=>{
+  buildAvGrid();initApp();
+  setTimeout(()=>goTo('s-welcome'),2000);
+};
+</script>
+</body>
+</html>
